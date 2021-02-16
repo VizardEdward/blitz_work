@@ -1,0 +1,2 @@
+recursive-include blitz_work/templates *
+recursive-include blitz_work/static *

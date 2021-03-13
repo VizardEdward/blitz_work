@@ -120,7 +120,7 @@ class BlitzCRUD(View):
                 return redirect(self.crud_base_name+"/view")
             else:
                 return render(request, self.create_template, context={
-                       "form": form, "crud_url": self.get_crud_url(), "context": {"title": self.create_title}})
+                       "form": form, "crud_url": self.get_crud_url(), "extend_template": self.extend_template, "context": {"title": self.create_title}})
         else:
             return HttpResponseNotAllowed(["POST"])
 
@@ -132,7 +132,7 @@ class BlitzCRUD(View):
                 formset.save()
                 return redirect(self.crud_base_name+"/view")
             else:
-                return render(request, self.update_template, context={"formset": formset , "crud_url": self.get_crud_url(), "context": {"title": self.update_title}})
+                return render(request, self.update_template, context={"formset": formset , "crud_url": self.get_crud_url(), "extend_template": self.extend_template, "context": {"title": self.update_title}})
         else:
             return HttpResponseNotAllowed(["POST"])
 

@@ -4,7 +4,7 @@
     <div class="alert {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}alert-danger{% elif message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}alert-warning{% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}alert-success{% elif message.level == DEFAULT_MESSAGE_LEVELS.INFO %}alert-info{% else %}alert-primary{% endif %}"role="alert">{{ message }}</div>
 {% endfor %}
 <div class="container">
-    {% if context.title and context.show_title %}<h1>{{context.title}}</h1>{% endif %}
+    {% if context.title and context.show_title or context.title_as_caption%}<h1>{% if context.title_as_caption %}{{context.caption}}{% else %}{{context.title}}{% endif %}</h1>{% endif %}
     {% include 'blitz_crud_search.html' with search_text="Buscar" %}
     <div class="btn-toolbar mb-3" role="toolbar">
         <div class="btn-group mr-1">

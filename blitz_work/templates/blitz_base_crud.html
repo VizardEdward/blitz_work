@@ -5,7 +5,7 @@
 {% endfor %}
 <div class="container">
     {% if context.title and context.show_title or context.title_as_caption%}<h1>{% if context.title_as_caption %}{{context.caption}}{% else %}{{context.title}}{% endif %}</h1>{% endif %}
-    {% include 'blitz_crud_search.html' with search_text="Buscar" %}
+    {% include 'blitz_crud_search.html' with search_text=crud_button.search %}
     <div class="btn-toolbar mb-3" role="toolbar">
         <div class="btn-group mr-1">
             <a role="button" href="{% url crud_url.create %}" class="btn btn-outline-success"><i class="fas fa-plus"></i> {{crud_button.add}}</a>

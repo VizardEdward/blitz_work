@@ -44,7 +44,7 @@ class BlitzCRUD(View):
     update_title = "Edit"
     detail_title = "Detail"
     delete_text = "The following elements will be deleted, do you want to delete them?"
-    crud_buttons = {"add":"Add", "create":"Create", "details":"Details", "update":"Update", "edit":"Edit", "delete":"Delete", "cancel":"Cancel", "return":"Return"}
+    crud_buttons = {"add":"Add", "create":"Create", "details":"Details", "update":"Update", "edit":"Edit", "delete":"Delete", "cancel":"Cancel", "return":"Return", "search":"Search"}
     __header_field_map = None
     __deletion_query = None
     __optim_query = None

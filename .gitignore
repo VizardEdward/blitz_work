@@ -1,5 +1,6 @@
 # Others
 build.py 
+build_install.py 
 # VS Code
 .vscode/
 

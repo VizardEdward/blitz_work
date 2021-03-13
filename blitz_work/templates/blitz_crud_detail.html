@@ -1,0 +1,21 @@
+{% extends extend_template %}
+{% block content %}
+<div class="container">
+    {% if context.title %}<h1>{{context.title}}</h1>{% endif %}
+    <form method="POST">
+        {{ formset.management_form }}
+        <fieldset disabled>
+            {% for form in formset %}
+                <div class="card" style="margin-bottom: 7px;">
+                    <div class="card-body">
+                        {{form.as_p}}
+                    </div>
+                </div>
+            {% endfor %}
+        </fieldset>
+        <div class="float-right" style="padding-bottom: 10px;">
+            <a role="button" href="{% url crud_url.view %}" type="button" class="btn btn-secondary"><i class="fas fa-caret-left"></i> {{crud_button.return}}</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

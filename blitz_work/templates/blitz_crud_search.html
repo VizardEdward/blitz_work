@@ -1,0 +1,10 @@
+{% block blitz_crud_search %}
+<div class="input-group mb-3">
+  <input type="search" name="blitzCrudSearchInput" id="blitzCrudSearchInput" placeholder="{{search_text|default:"Search"}}" aria-label="{{search_text|default:"Search"}}" aria-describedby="blitzCrudSearchButton" class="form-control" value="{{context.search_text|default:""}}">
+  <div class="input-group-append">
+    <button type="button" id="blitzCrudSearchButton" name="blitzCrudSearchButton" class="btn btn-outline-info" type="button">
+        <i class="fa fa-search" aria-hidden="true"></i> {{search_text|default:"Search"}}
+    </button>
+  </div>
+</div>
+{% endblock blitz_crud_search %}

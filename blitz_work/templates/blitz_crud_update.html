@@ -1,0 +1,22 @@
+{% extends extend_template %}
+{% block content %}
+<div class="container">
+    {% if context.title %}<h1>{{context.title}}</h1>{% endif %}
+    <form method="POST">
+        <input type="hidden" name="_method" value="PUT">
+        {% csrf_token %}
+        {{ formset.management_form }}
+        {% for form in formset %}
+            <div class="card" style="margin-bottom: 7px;">
+                <div class="card-body">
+                    {{form.as_p}}
+                </div>
+            </div>
+        {% endfor %}
+        <div class="float-right" style="padding-bottom: 10px;">
+            <button type="submit" class="btn btn-warning"><i class="fas fa-edit"></i> {{crud_button.update}}</button>
+            <a role="button" href="{% url crud_url.view %}" type="button" class="btn btn-secondary"><i class="fas fa-times"></i> {{crud_button.cancel}}</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

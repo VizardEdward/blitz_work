@@ -1,0 +1,22 @@
+{% load static %}
+<html>
+    <head>
+        <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+        <link rel="stylesheet" href="{% static 'css/select2.min.css' %}">
+        <link rel="stylesheet" href="{% static 'css/select2-bootstrap.min.css' %}">
+        <link rel="stylesheet" href="{% static 'css/all.min.css' %}">
+        <script src="{% static 'js/jquery-3.5.1.min.js' %}"></script>
+        <script src="{% static 'js/popper.min.js' %}"></script>
+        <script src="{% static 'js/bootstrap.min.js' %}"></script>
+        <script src="{% static 'js/select2.min.js' %}"></script>
+        <script src="{% static 'js/blitz.js' %}"></script>
+        {% block extra_assets %}{% endblock %}
+        <title>
+            {% block title %}{% endblock %}
+        </title>
+    </head>
+
+    <body>
+        {% block main %}{% block content %}{% endblock %}{% endblock %}
+    </body>
+</html>

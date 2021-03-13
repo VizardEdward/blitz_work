@@ -1,0 +1,25 @@
+{% extends extend_template %}
+{% block content %}
+<div class="container">
+    {% if context.title %}<h1>{{context.title}}</h1>{% endif %}
+    <form method="POST">
+        <input type="hidden" name="_method" value="DELETE">
+        <input type="hidden" name="items" value="{{context.pk}}">
+        {% csrf_token %}
+        <div class="card" style="margin-bottom: 7px;">
+            <div class="card-body">
+            {% if context.message %}<h5>{{context.message}}</h5>{% endif %}
+                <ul>
+                {% for item in context.items %}
+                    <li>{{item}}</li>
+                {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div class="float-right">
+            <button type="submit" class="btn btn-danger"><i class="fas fa-trash"></i> {{crud_button.delete}}</button>
+            <a role="button" href="{% url crud_url.view %}" type="button" class="btn btn-secondary"><i class="fas fa-times"></i> Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -275,7 +275,7 @@ class BlitzCRUD(View):
                 }
 
 
-def get_urls(crud_class: BlitzCRUD, crud_name):
+def get_urls(crud_class: BlitzCRUD, crud_name=None):
     """
         Return a list of paths for the class
 
@@ -286,6 +286,7 @@ def get_urls(crud_class: BlitzCRUD, crud_name):
     Returns:
         list: list of paths for the CRUD
     """
+    crud_name = crud_name or crud_class.data._meta.verbose_name
     crud_view = crud_class.as_view(crud_base_name=crud_name)
     return [path("view/", crud_view,
                  name=crud_name+"/view"),

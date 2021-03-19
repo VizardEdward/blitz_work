@@ -1,16 +1,18 @@
 import ast
 import inspect
 
-from blitz_work.forms import BlitzModelForm
+from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth.decorators import permission_required
 from django.db.models import Model, Q
 from django.db.models.query import QuerySet
 from django.forms.models import modelformset_factory
-from django.http.response import HttpResponseNotAllowed
+from django.http.response import HttpResponseForbidden, HttpResponseNotAllowed
 from django.shortcuts import redirect, render
 from django.urls import path, resolve
 from django.views import View
 
+from blitz_work.forms import BlitzModelForm
 
 
 def default_concatenation(self, list):
@@ -18,6 +20,7 @@ def default_concatenation(self, list):
     Default concatenation function
     """
     return ", ".join(list)
+
 
 class BlitzCRUD(View):
     template_name = "blitz_base_crud.html"  # template for render
@@ -39,12 +42,15 @@ class BlitzCRUD(View):
     concat_function = default_concatenation
     exclude = ['id', ]
     crud_base_name = ""
-    delete_messages = {"success":"Element deleted","error":"Error on delete"}
+    delete_messages = {"success": "Element deleted",
+                       "error": "Error on delete"}
     delete_title = "Delete"
     update_title = "Edit"
     detail_title = "Detail"
     delete_text = "The following elements will be deleted, do you want to delete them?"
-    crud_buttons = {"add":"Add", "create":"Create", "details":"Details", "update":"Update", "edit":"Edit", "delete":"Delete", "cancel":"Cancel", "return":"Return", "search":"Search"}
+    crud_buttons = {"add": "Add", "create": "Create", "details": "Details", "update": "Update",
+                    "edit": "Edit", "delete": "Delete", "cancel": "Cancel", "return": "Return", "search": "Search"}
+    allow_anonimous_in_debug = True
     __header_field_map = None
     __deletion_query = None
     __optim_query = None
@@ -54,6 +60,8 @@ class BlitzCRUD(View):
     __many_to_many_fields = None
     __caption = ""
     __model = None
+    __app_name = None
+    __model_name = None
 
     def __init__(self, **kwargs):
         if isinstance(self.data, QuerySet):
@@ -62,6 +70,8 @@ class BlitzCRUD(View):
             self.__deletion_query = self.data
             self.__optim_query = self.data
             self.__caption = self.data.model._meta.verbose_name_plural
+            self.__app_name = self.data.model._meta.app_label
+            self.__model_name = self.data.model._meta.model_name
             self.__model = self.data.model
         elif inspect.isclass(self.data):
             if issubclass(self.data, Model):
@@ -69,7 +79,9 @@ class BlitzCRUD(View):
                 self.__fields, self.__headers, self.__foreignkey_fields, self.__many_to_many_fields = self.extract_model_fields(
                     self.data._meta.get_fields())
                 self.__caption = self.data._meta.verbose_name_plural
+                self.__app_name = self.data._meta.app_label
                 self.__deletion_query = self.data.objects
+                self.__model_name = self.data._meta.model_name
                 self.__optim_query = self.optimice_query(
                     self.__foreignkey_fields, self.__many_to_many_fields)
                 self.__model = self.data
@@ -80,7 +92,8 @@ class BlitzCRUD(View):
         if self.form is None:
             self.form = self.get_utility_form(self.__model)
         if self.formset is None:
-            self.formset = modelformset_factory(self.__model,form=self.form, extra=0)
+            self.formset = modelformset_factory(
+                self.__model, form=self.form, extra=0)
         self.__header_field_map = zip(self.__fields, self.__headers)
         super().__init__(**kwargs)
 
@@ -112,92 +125,118 @@ class BlitzCRUD(View):
             return self.delete_view(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        view = resolve(request.path_info).url_name
-        if view.endswith("create"):
-            form = self.form(request.POST)
-            if form.is_valid():
-                form.save()
-                return redirect(self.crud_base_name+"/view")
+        if request.user.has_perm(f'{self.__app_name}.add_{self.__model_name}') or (settings.DEBUG and self.allow_anonimous_in_debug):
+            view = resolve(request.path_info).url_name
+            if view.endswith("create"):
+                form = self.form(request.POST)
+                if form.is_valid():
+                    form.save()
+                    return redirect(self.crud_base_name+"/view")
+                else:
+                    return render(request, self.create_template, context={
+                        "form": form, "crud_url": self.get_crud_url(), "crud_button": self.crud_buttons, "extend_template": self.extend_template, "context": {"title": self.create_title}})
             else:
-                return render(request, self.create_template, context={
-                       "form": form, "crud_url": self.get_crud_url(), "crud_button":self.crud_buttons, "extend_template": self.extend_template, "context": {"title": self.create_title}})
+                return HttpResponseNotAllowed(["POST"])
         else:
-            return HttpResponseNotAllowed(["POST"])
+            return HttpResponseForbidden()
 
     def put(self, request, *args, **kwargs):
-        view = resolve(request.path_info).url_name
-        if view.endswith("update"):
-            formset = self.formset(request.PUT)
-            if formset.is_valid():
-                formset.save()
-                return redirect(self.crud_base_name+"/view")
+        if request.user.has_perm(f'{self.__app_name}.change_{self.__model_name}') or (settings.DEBUG and self.allow_anonimous_in_debug):
+            view = resolve(request.path_info).url_name
+            if view.endswith("update"):
+                formset = self.formset(request.PUT)
+                if formset.is_valid():
+                    formset.save()
+                    return redirect(self.crud_base_name+"/view")
+                else:
+                    return render(request, self.update_template, context={"formset": formset, "crud_url": self.get_crud_url(), "crud_button": self.crud_buttons, "extend_template": self.extend_template, "context": {"title": self.update_title}})
             else:
-                return render(request, self.update_template, context={"formset": formset , "crud_url": self.get_crud_url(), "crud_button":self.crud_buttons, "extend_template": self.extend_template, "context": {"title": self.update_title}})
+                return HttpResponseNotAllowed(["POST"])
         else:
-            return HttpResponseNotAllowed(["POST"])
+            return HttpResponseForbidden()
 
     def delete(self, request, *args, **kwargs):
-        try:
-            items = ast.literal_eval(request.DELETE.get("items"))
-            self.__deletion_query.filter(pk__in=items).delete()
-            messages.success(request, self.delete_messages.get("success","Element deleted"))
-        except:
-            messages.error(request, self.delete_messages.get("error","Error on delete"))
-        return redirect(self.crud_base_name+"/view")
+        if request.user.has_perm(f'{self.__app_name}.delete_{self.__model_name}') or (settings.DEBUG and self.allow_anonimous_in_debug):
+            try:
+                items = ast.literal_eval(request.DELETE.get("items"))
+                self.__deletion_query.filter(pk__in=items).delete()
+                messages.success(request, self.delete_messages.get(
+                    "success", "Element deleted"))
+            except:
+                messages.error(request, self.delete_messages.get(
+                    "error", "Error on delete"))
+            return redirect(self.crud_base_name+"/view")
+        else:
+            return HttpResponseForbidden()
 
     def create_view(self, request, *args, **kwargs):
-        return render(request, self.create_template, context={"form": self.form(), "crud_url": self.get_crud_url(), "crud_button":self.crud_buttons, "extend_template": self.extend_template, "context": {"title": self.create_title}})
+        if request.user.has_perm(f'{self.__app_name}.add_{self.__model_name}') or (settings.DEBUG and self.allow_anonimous_in_debug):
+            return render(request, self.create_template, context={"form": self.form(), "crud_url": self.get_crud_url(), "crud_button": self.crud_buttons, "extend_template": self.extend_template, "context": {"title": self.create_title}})
+        else:
+            return HttpResponseForbidden()
 
     def list_view(self, request, *args, **kwargs):
-        table = request.GET.get('table', '')
-        page = request.GET.get('page', 1)
-        order = request.GET.get('order', 'pk')
-        search = request.GET.get('search', None)
-        direction = ''
-        field = ''
-        query = self.__optim_query
+        if request.user.has_perm(f'{self.__app_name}.view_{self.__model_name}') or (settings.DEBUG and self.allow_anonimous_in_debug):
+            table = request.GET.get('table', '')
+            page = request.GET.get('page', 1)
+            order = request.GET.get('order', 'pk')
+            search = request.GET.get('search', None)
+            direction = ''
+            field = ''
+            query = self.__optim_query
 
-        if search:
-            search_query = Q()
-            for field in self.__fields:
-                if(field not in self.__many_to_many_fields and field not in self.__foreignkey_fields):
-                    search_query |= Q(**{field + "__icontains": search})
-            query = query.filter(search_query)
+            if search:
+                search_query = Q()
+                for field in self.__fields:
+                    if(field not in self.__many_to_many_fields and field not in self.__foreignkey_fields):
+                        search_query |= Q(**{field + "__icontains": search})
+                query = query.filter(search_query)
 
-        if table == self.__caption:
-            direction, field, order = self.get_order(
-                order,self.__fields, self.__many_to_many_fields)
-            query = query.order_by(order)
-            order = order[1:] if order[:1] == '-' else order
+            if table == self.__caption:
+                direction, field, order = self.get_order(
+                    order, self.__fields, self.__many_to_many_fields)
+                query = query.order_by(order)
+                order = order[1:] if order[:1] == '-' else order
+            else:
+                query = query.order_by("pk")
+                page = 1
+
+            headers = [{"text": header, "column": name, "direction": direction if name ==
+                        field else '-'} for name, header in self.__header_field_map]
+            from django.core.paginator import Paginator
+            current_page = Paginator(query, self.paginate_by).get_page(page)
+
+            values = [{"values": [getattr(value, key) if key not in self.__many_to_many_fields else self.concat_function(
+                [element.__str__() for element in getattr(value, key).all()]) for key in self.__fields], "pk":getattr(value, "pk")} for value in current_page.object_list]
+            # print(self.data.query.annotations.keys())
+
+            return render(request, self.template_name, context={"crud_url": self.get_crud_url(), "crud_button": self.crud_buttons, "extend_template": self.extend_template, "table_template": self.table_template, "context": {"search_text": search, "search": "" if search is None else "&search=" + search, "title_as_caption": self.caption_is_title, "show_caption": self.show_caption, "show_title": self.show_title, "title": self.title, "current_order": order, "caption": self.__caption, "headers": headers, "values": values, "page": current_page}})
         else:
-            query = query.order_by("pk")
-            page = 1
-
-        headers = [{"text": header, "column": name, "direction": direction if name ==
-                    field else '-'} for name, header in self.__header_field_map]
-        from django.core.paginator import Paginator
-        current_page = Paginator(query, self.paginate_by).get_page(page)
-
-        values = [{"values": [getattr(value, key) if key not in self.__many_to_many_fields else self.concat_function(
-            [element.__str__() for element in getattr(value, key).all()]) for key in self.__fields], "pk":getattr(value, "pk")} for value in current_page.object_list]
-        # print(self.data.query.annotations.keys())
-
-        return render(request, self.template_name, context={"crud_url": self.get_crud_url(), "crud_button":self.crud_buttons, "extend_template": self.extend_template, "table_template": self.table_template, "context": {"search_text": search, "search": "" if search is None else "&search=" + search, "title_as_caption": self.caption_is_title, "show_caption": self.show_caption, "show_title": self.show_title, "title": self.title, "current_order": order, "caption": self.__caption, "headers": headers, "values": values, "page": current_page}})
+            return HttpResponseForbidden()
 
     def update_view(self, request, *args, **kwargs):
-        items = request.GET.getlist("item")
-        query = self.__optim_query
-        return render(request, self.update_template, context={"formset": self.formset(queryset=query.filter(pk__in=items)), "crud_url": self.get_crud_url(), "extend_template": self.extend_template, "crud_button":self.crud_buttons, "context": {"title": self.update_title}})
+        if request.user.has_perm(f'{self.__app_name}.change_{self.__model_name}') or (settings.DEBUG and self.allow_anonimous_in_debug):
+            items = request.GET.getlist("item")
+            query = self.__optim_query
+            return render(request, self.update_template, context={"formset": self.formset(queryset=query.filter(pk__in=items)), "crud_url": self.get_crud_url(), "extend_template": self.extend_template, "crud_button": self.crud_buttons, "context": {"title": self.update_title}})
+        else:
+            return HttpResponseForbidden()
 
     def detail_view(self, request, *args, **kwargs):
-        items = request.GET.getlist("item")
-        query = self.__optim_query
-        return render(request, self.detail_template, context={"formset": self.formset(queryset=query.filter(pk__in=items)), "crud_url": self.get_crud_url(), "crud_button":self.crud_buttons, "extend_template": self.extend_template, "context": {"title": self.detail_title}})
+        if request.user.has_perm(f'{self.__app_name}.view_{self.__model_name}') or (settings.DEBUG and self.allow_anonimous_in_debug):
+            items = request.GET.getlist("item")
+            query = self.__optim_query
+            return render(request, self.detail_template, context={"formset": self.formset(queryset=query.filter(pk__in=items)), "crud_url": self.get_crud_url(), "crud_button": self.crud_buttons, "extend_template": self.extend_template, "context": {"title": self.detail_title}})
+        else:
+            return HttpResponseForbidden()
 
     def delete_view(self, request, *args, **kwargs):
-        items = request.GET.getlist("item")
-        query = self.__optim_query
-        return render(request, self.delete_template, context={"crud_url": self.get_crud_url(), "crud_button":self.crud_buttons, "extend_template": self.extend_template, "context": {"title": self.delete_title,"message":self.delete_text, "pk":items, "items": query.filter(pk__in=items)}})
+        if request.user.has_perm(f'{self.__app_name}.delete_{self.__model_name}') or (settings.DEBUG and self.allow_anonimous_in_debug):
+            items = request.GET.getlist("item")
+            query = self.__optim_query
+            return render(request, self.delete_template, context={"crud_url": self.get_crud_url(), "crud_button": self.crud_buttons, "extend_template": self.extend_template, "context": {"title": self.delete_title, "message": self.delete_text, "pk": items, "items": query.filter(pk__in=items)}})
+        else:
+            return HttpResponseForbidden()
 
     def get_order(self, order, fields_name, many_to_many_fields):
         """
@@ -260,10 +299,10 @@ class BlitzCRUD(View):
 
     def get_utility_form(self, real_model):
         class UtilityForm(BlitzModelForm):
-                class Meta:
-                    model = real_model
-                    fields = '__all__'
-                    exclude = ('id','pk',)
+            class Meta:
+                model = real_model
+                fields = '__all__'
+                exclude = ('id', 'pk',)
         return UtilityForm
 
     def get_crud_url(self):
@@ -291,11 +330,11 @@ def get_urls(crud_class: BlitzCRUD, crud_name=None):
     return [path("view/", crud_view,
                  name=crud_name+"/view"),
             path("detail/", crud_view,
-                name=crud_name+"/detail"),
+                 name=crud_name+"/detail"),
             path("create/", crud_view,
                  name=crud_name+"/create"),
             path("update/", crud_view,
-                 name=crud_name+"/update"),                 
+                 name=crud_name+"/update"),
             path("delete/", crud_view,
                  name=crud_name+"/delete"),
             ]

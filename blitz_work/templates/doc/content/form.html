@@ -1,0 +1,42 @@
+{% extends 'doc/base.html' %}
+{% load static %}
+{% block content %}
+{% verbatim %}
+<h1 class="text-white">Formularios</h1>
+<pre><code>
+class BlitzModelForm(forms.ModelForm):
+    mutate_inputs = True
+    mutate_text_area = True
+    mutate_select = True
+    mutate_select_multiple = True
+            
+class BlitzForm(forms.Form):
+    mutate_inputs = True
+    mutate_text_area = True
+    mutate_select = True
+    mutate_select_multiple = True
+</code></pre>
+<p class="text-white">Los formularios de <blitztext>Blitz Work</blitztext> agregan la clase "form-control" a los
+input, select y textarea. Adem&aacute;s de agregar la clase "blitzSelect" a los select, esta clase ser&aacute; utilizada
+por el javascript de <blitztext>Blitz Work</blitztext> para modificar su comportamiento.</p>
+<h4 class="text-white">Variables.</h4>
+<ul>
+<li class="text-white">
+<h5 class="text-white"><i>mutate_text_area</i></h5>
+<p class="text-white">Especifica si los input del formulario ser&aacute;n modificados.</p>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>mutate_text_area</i></h5>
+<p class="text-white">Especifica si los textarea del formulario ser&aacute;n modificados.</p>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>mutate_select</i></h5>
+<p class="text-white">Especifica si los select de seleccion simple del formulario ser&aacute;n modificados.</p>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>mutate_select_multiple</i></h5>
+<p class="text-white">Especifica si los select de seleccion multiple del formulario ser&aacute;n modificados.</p>
+</li>
+</ul>
+{% endverbatim %}
+{% endblock content %}

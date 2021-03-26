@@ -1,0 +1,33 @@
+{% extends 'doc/base.html' %}
+{% load static %}
+{% block content %}
+{% verbatim %}
+<h1 class="text-white">Detalles</h1>
+<pre><code>
+{% extends 'blitz_crud_detail.html' %}
+</code></pre>
+<pre><code>
+{% extends extend_template %}
+{% block content %}
+&lt;div class="container"&gt;
+    {% if context.title %}&lt;h1&gt;{{context.title}}&lt;/h1&gt;{% endif %}
+    &lt;form method="POST"&gt;
+        {{ formset.management_form }}
+        &lt;fieldset disabled&gt;
+            {% for form in formset %}
+                &lt;div class="card" style="margin-bottom: 7px;"&gt;
+                    &lt;div class="card-body"&gt;
+                        {{form.as_p}}
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            {% endfor %}
+        &lt;/fieldset&gt;
+        &lt;div class="float-right" style="padding-bottom: 10px;"&gt;
+            &lt;a role="button" href="{% url crud_url.view %}" type="button" class="btn btn-secondary"&gt;&lt;i class="fas fa-caret-left"&gt;&lt;/i&gt; {{crud_button.return}}&lt;/a&gt;
+        &lt;/div&gt;
+    &lt;/form&gt;
+&lt;/div&gt;
+{% endblock %}
+</code></pre>
+{% endverbatim %}
+{% endblock content %}

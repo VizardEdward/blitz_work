@@ -62,7 +62,7 @@
                 &lt;div class="collapse navbar-collapse" id="navbarNavDropdown"&gt;
                     &lt;ul class="navbar-nav"&gt;
                     &lt;li class="nav-item"&gt;
-                        &lt;a class="nav-link" href="{% url 'book/view' %}"&gt;Libros&lt;/span&gt;&lt;/a&gt;
+                        &lt;a class="nav-link" href="{% url 'book/view' %}"&gt;Libros&lt;/a&gt;
                     &lt;/li&gt;
                     &lt;li class="nav-item"&gt;
                         &lt;a class="nav-link" href="{% url 'author/view' %}"&gt;Autores&lt;/a&gt;
@@ -84,7 +84,7 @@
         class BookCRUD(BlitzCRUD):
             show_title = True
             show_caption = False
-           caption_is_title = True
+            caption_is_title = True
             extend_template = "base.html"
             data = Book
 
@@ -93,7 +93,7 @@
             show_caption = False
             caption_is_title = True
             extend_template = "base.html"
-        data = Author
+            data = Author
     ```
 
 5. Include the URLs.
@@ -108,3 +108,23 @@
         path('author/', include(get_urls(AuthorCRUD,"author"))),
     ]
    ```
+
+6. More help
+
+   1. Include Blitz Work help urls in urls.py
+
+       ```python
+       from blitz_work.urls import urlpatterns
+
+       urlpatterns = [
+            path('',include(urlpatterns)),
+       ]
+       ```
+
+   2. Run the server.
+
+        ```bash
+        python manage.py runserver localhost:8000
+        ```
+
+   3. Go to the url [blitz-doc/](http://localhost:8000/blitz-doc/)

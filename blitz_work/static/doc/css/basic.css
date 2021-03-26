@@ -1,0 +1,25 @@
+@font-face {
+  font-family: "ShockTherapy BB";
+  src: url("../fonts/shocktherapybb_reg.ttf");
+}
+.blitz{
+    font-family: "ShockTherapy BB";
+    font-size: 4rem;
+}
+blitztext{
+  font-family: "ShockTherapy BB";
+}
+.preview-box{
+  display: none;
+  width: 100%;
+}
+a:hover + .preview-box{
+  display: block;
+  position: relative;
+  z-index: 100;
+}
+.preview-box:hover{
+  display: block;
+  position: relative;
+  z-index: 100;
+}

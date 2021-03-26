@@ -1,0 +1,57 @@
+{% extends 'doc/base.html' %}
+{% load static %}
+{% block content %}
+{% verbatim %}
+<h1 class="text-white">URLs de <blitztext>Blitz Work</blitztext>.</h1>
+<pre><code>
+from app.views import AuthorCRUD, BookCRUD
+from django.urls import path,include
+from blitz_work.blitzcrud import get_urls
+
+urlpatterns = [
+    path('book/', include(get_urls(BookCRUD,"book"))),
+    path('author/', include(get_urls(AuthorCRUD))),
+]
+</code></pre>
+<p class="text-white"><blitztext>Blitz Work</blitztext> utiliza cinco urls. (&lt;crudname&gt;/view), 
+(&lt;crudname&gt;/detail), (&lt;crudname&gt;/create), (&lt;crudname&gt;/update), (&lt;crudname&gt;/delete).</p>
+<p class="text-white">Al ejecutar:</p>
+<pre><code>
+path('book/', include(get_urls(BookCRUD,"book"))),
+</code></pre>
+<p class="text-white">Se crean las siguientes urls:</p>
+<pre><code>
+'book/view/' [name= "book/view"]
+'book/create/' [name= "book/create"]
+'book/detail/' [name= "book/detail"]
+'book/update/' [name= "book/update"]
+'book/delete/' [name= "book/delete"]
+</code></pre>
+<p class="text-white">El segundo par&aacute;metro especificado en la funci&oacute;n get_urls(...,...) corresponde a el nombre
+que tendr&aacute; la url. Este par&aacute;metro puede ser omitido, al ser omitido <blitztext>Blitz Work</blitztext> utilizar&aacute;
+el verbose_name del modelo especificado.</p>
+<p class="text-white">Al ejecutar:</p>
+<pre><code>
+path('book/', include(get_urls(BookCRUD))),
+</code></pre>
+<p class="text-white"> Para este modelo:</p>
+<pre><code>
+class Book(models.Model):
+    ...
+    class Meta:
+        verbose_name = "example"
+</code></pre>
+<p class="text-white">Se crean las siguientes urls:</p>
+<pre><code>
+'book/view/' [name= "example/view"]
+'book/create/' [name= "example/create"]
+'book/detail/' [name= "example/detail"]
+'book/update/' [name= "example/update"]
+'book/delete/' [name= "example/delete"]
+</code></pre>
+<p class="text-white">Se puede acceder a estas url desde una plantilla de la siguiente forma:</p>
+<pre><code>
+&lt;a href="{% url 'example/view' %}"&gt;Libros&lt;/a&gt;
+</code></pre>
+{% endverbatim %}
+{% endblock content %}

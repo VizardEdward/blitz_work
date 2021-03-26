@@ -1,0 +1,179 @@
+{% extends 'doc/base.html' %}
+{% load static %}
+{% block content %}
+{% verbatim %}
+<h1 class="text-white">CRUD</h1>
+<pre><code>
+from Book.models import Author, Book
+from blitz_work.blitzcrud import BlitzCRUD
+
+
+class BookCRUD(BlitzCRUD):
+    show_title = True
+    show_caption = False
+    caption_is_title = True
+    extend_template = "base.html"
+    data = Book
+</code></pre>
+<p class="text-white"><blitztext>Blitz Work</blitztext> provee muchas opciones para facilitar su uso y vizualizaci&oacute;n.</p>
+<pre><code>
+class BlitzCRUD(View):
+    template_name = "blitz_base_crud.html"  
+    extend_template = "blitz_base_offline.html"
+    table_template = "blitz_crud_table.html"
+    create_template = "blitz_crud_create.html"
+    update_template = "blitz_crud_update.html"
+    delete_template = "blitz_crud_delete.html"
+    detail_template = "blitz_crud_detail.html"
+    data = None
+    paginate_by = 20
+    title = None
+    form = None
+    formset = None
+    show_caption = True
+    create_title = "Create"
+    show_title = True
+    caption_is_title = False
+    concat_function = default_concatenation
+    exclude = ['id', ]
+    delete_messages = {"success": "Element deleted",
+                       "error": "Error on delete"}
+    delete_title = "Delete"
+    update_title = "Edit"
+    detail_title = "Detail"
+    delete_text = "The following elements will be deleted, do you want to delete them?"
+    crud_buttons = {"add": "Add", "create": "Create", "details": "Details", "update": "Update",
+                    "edit": "Edit", "delete": "Delete", "cancel": "Cancel", "return": "Return", "search": "Search"}
+    allow_anonimous_in_debug = True
+</code></pre>
+<h4 class="text-white">Variables de plantillas.</h4>
+<ul>
+<li class="text-white">
+<h5 class="text-white"><i>template_name</i></h5>
+<p class="text-white">Plantilla principal. Esta es la plantilla que renderiza la vista de lista.
+Debe contener los botones de b&uacute;squeda, a&ntilde;adir, editar, eliminar, cancelar y detalles as&iacute; como 
+la tabla de datos.</p>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>extend_template</i></h5>
+<p class="text-white">Esta es la plantilla que se utilizaran como base todas las vistas de no ser modificadas. 
+Su valor ser&aacute; el de la variable (extend_template) en las plantillas que provee <blitztext>Blitz Work</blitztext></p>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>table_template</i></h5>
+<p class="text-white">Esta es la plantilla que se utilizar&aacute; para mostrar la tabla en la vista de lista de 
+no ser modificada.</p>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>create_template</i></h5>
+<p class="text-white">Esta es la plantilla que se utilizar&aacute; para la vista de crear.</p>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>update_template</i></h5>
+<p class="text-white">Esta es la plantilla que se utilizar&aacute; para la vista de actualizar.</p>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>delete_template</i></h5>
+<p class="text-white">Esta es la plantilla que se utilizar&aacute; para la vista de eliminar.</p>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>detail_template</i></h5>
+<p class="text-white">Esta es la plantilla que se utilizar&aacute; para la vista de detalles.</p>
+</li>
+</ul>
+<h4 class="text-white">Variables de datos y lista.</h4>
+<ul>
+<li class="text-white">
+<h5 class="text-white"><i>data</i></h5>
+<p class="text-white">Especifica el modelo que utilizara el CRUD.</p>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>paginate_by</i></h5>
+<p class="text-white">Especifica la cantidad de filas por pagina en el CRUD.</p>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>form</i></h5>
+<p class="text-white">Especifica el formulario que se utilizara para la vista de a&ntilde;adir en CRUD.
+De no ser especificado <blitztext>Blitz Work</blitztext> crear&aacute; un formulario por defecto con todos los
+campos del modelo.</p>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>formset</i></h5>
+<p class="text-white">Especifica el conjunto de formulario que se utilizara para la vista de editar y detalles
+en CRUD. De no ser especicficado <blitztext>Blitz Work</blitztext> crear&aacute; uno por defecto con todos los
+campos del modelo. (<blitztext>Blitz Work</blitztext> provee edici&oacute;n m&uacute;ltiple y vista
+de detalles multiple, es por esto que es necesario.).</p>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>concat_function</i></h5>
+<p class="text-white">Especifica la funci&oacute;n que se utilizara para concatenar los elementos en una relaci&oacute;n (m2m),
+en la vista de lista. De no ser especificado <blitztext>Blitz Work</blitztext> utilizar&aacute; la siguiente funci&oacute;n.</p>
+<pre><code>
+def default_concatenation(self, list):
+    """
+    Default concatenation function
+    """
+    return ", ".join(list)
+</code></pre>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>exclude</i></h5>
+<p class="text-white">Especifica los campos que se excluir&aacute;n del modelo en la tabla.</p>
+</li>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>allow_anonimous_in_debug</i></h5>
+<p class="text-white"><blitztext>Blitz Work</blitztext> comprueba si el usuario posee permisos para cada una de las
+vistas y acciones. Esta variable permite a un usuario sin autenticar saltar las restricciones.
+Esto es solo si el proyecto actual esta en modo DEBUG.</p>
+</li>
+</ul>
+<h4 class="text-white">Variables de texto y t&iacute;tulos.</h4>
+<ul>
+<li class="text-white">
+<h5 class="text-white"><i>title</i></h5>
+<p class="text-white">Especifica el t&iacute;tulo de la vista de lista en el CRUD.</p>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>create_title</i></h5>
+<p class="text-white">Especifica el t&iacute;tulo de la vista de creaci&oacute;n en el CRUD.</p>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>update_title</i></h5>
+<p class="text-white">Especifica el t&iacute;tulo de la vista de actulalizaci&oacute;n en el CRUD.</p>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>detail_title</i></h5>
+<p class="text-white">Especifica el t&iacute;tulo de la vista de detalles en el CRUD.</p>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>delete_title</i></h5>
+<p class="text-white">Especifica el t&iacute;tulo de la vista de eliminaci&oacute;n en el CRUD.</p>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>delete_text</i></h5>
+<p class="text-white">Especifica el mensaje de la vista de eliminaci&oacute;n en el CRUD.</p>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>delete_messages</i></h5>
+<p class="text-white">Especifica el texto de los mensajes de eliminaci&oacute;n del CRUD.</p>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>crud_buttons</i></h5>
+<p class="text-white">Especifica el texto de los botones del CRUD.</p>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>show_title</i></h5>
+<p class="text-white">Especifica si se muestra el t&iacute;tulo en la vista de lista del CRUD.</p>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>show_caption</i></h5>
+<p class="text-white">Especifica si se muestra la descripci&oacute;n de la tabla del CRUD. Su valor coresponde al del verbose_name del modelo.</p>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>caption_is_title</i></h5>
+<p class="text-white">Especifica si se utilizar&aacute; como t&iacute;tulo el verbose_name del modelo.</p>
+</li>
+</ul>
+{% endverbatim %}
+{% endblock content %}

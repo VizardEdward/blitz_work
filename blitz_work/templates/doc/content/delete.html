@@ -1,0 +1,45 @@
+{% extends 'doc/base.html' %}
+{% load static %}
+{% block content %}
+{% verbatim %}
+<h1 class="text-white">Eliminar</h1>
+<pre><code>
+{% extends 'blitz_crud_delete.html' %}
+</code></pre>
+<pre><code>
+{% extends extend_template %}
+{% block content %}
+&lt;div class="container"&gt;
+    {% if context.title %}&lt;h1&gt;{{context.title}}&lt;/h1&gt;{% endif %}
+    &lt;form method="POST"&gt;
+        &lt;input type="hidden" name="_method" value="DELETE"&gt;
+        &lt;input type="hidden" name="items" value="{{context.pk}}"&gt;
+        {% csrf_token %}
+        &lt;div class="card" style="margin-bottom: 7px;"&gt;
+            &lt;div class="card-body"&gt;
+            {% if context.message %}&lt;h5&gt;{{context.message}}&lt;/h5&gt;{% endif %}
+                &lt;ul&gt;
+                {% for item in context.items %}
+                    &lt;li&gt;{{item}}&lt;/li&gt;
+                {% endfor %}
+                &lt;/ul&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class="float-right"&gt;
+            &lt;button type="submit" class="btn btn-danger"&gt;&lt;i class="fas fa-trash"&gt;&lt;/i&gt; {{crud_button.delete}}&lt;/button&gt;
+            &lt;a role="button" href="{% url crud_url.view %}" type="button" class="btn btn-secondary"&gt;&lt;i class="fas fa-times"&gt;&lt;/i&gt; Cancel&lt;/a&gt;
+        &lt;/div&gt;
+    &lt;/form&gt;
+&lt;/div&gt;
+{% endblock %}
+</code></pre>
+<h6 class="text-white">Importante resaltar en campo oculto en el formulario.</h6>
+<pre><code>
+&lt;input type="hidden" name="_method" value="DELETE"&gt;
+</code></pre>
+<p class="text-white"><blitztext>Blitz Work</blitztext> ofrece soporte completo a los m&eacute;todos 
+(GET, POST, PUT y DELETE) de HTTP, pero los formularios HTML solo soportan los m&eacute;todos (GET y POST),
+para los m&eacute;todos PUT y DELETE, es necesario incluir este campo en los formularios de 
+edici&oacute;n y eliminaci&oacute;n.</p>
+{% endverbatim %}
+{% endblock content %}

@@ -1,0 +1,42 @@
+{% extends 'doc/base.html' %}
+{% load static %}
+{% block content %}
+{% verbatim %}
+<h1 class="text-white">Vista principal</h1>
+<pre><code>
+{% extends 'blitz_base_crud.html' %}
+</code></pre>
+<pre><code>
+{% extends extend_template %}
+{% block content %}
+{% for message in messages %}
+    &lt;div class="alert {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}alert-danger{% elif message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}alert-warning{% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}alert-success{% elif message.level == DEFAULT_MESSAGE_LEVELS.INFO %}alert-info{% else %}alert-primary{% endif %}"role="alert"&gt;{{ message }}&lt;/div&gt;
+{% endfor %}
+&lt;div class="container"&gt;
+    {% if context.title and context.show_title or context.title_as_caption%}&lt;h1&gt;{% if context.title_as_caption %}{{context.caption}}{% else %}{{context.title}}{% endif %}&lt;/h1&gt;{% endif %}
+    {% include 'blitz_crud_search.html' with search_text=crud_button.search %}
+    &lt;div class="btn-toolbar mb-3" role="toolbar"&gt;
+        &lt;div class="btn-group mr-1"&gt;
+            &lt;a role="button" href="{% url crud_url.create %}" class="btn btn-outline-success"&gt;&lt;i class="fas fa-plus"&gt;&lt;/i&gt; {{crud_button.add}}&lt;/a&gt;
+        &lt;/div&gt;
+        &lt;div class="blitzSelectionButtons"&gt;
+            &lt;div class="btn-group"&gt;
+                &lt;button type="button" role="button" onclick="getSelected('{% url crud_url.update %}');" class="btn btn-outline-warning"&gt;&lt;i class="fas fa-edit"&gt;&lt;/i&gt; {{crud_button.edit}}&lt;/button&gt;
+            &lt;/div&gt;
+            &lt;div class="btn-group"&gt;
+                &lt;button type="button" role="button" onclick="getSelected('{% url crud_url.detail %}');" class="btn btn-outline-info"&gt;&lt;i class="fas fa-eye"&gt;&lt;/i&gt; {{crud_button.details}}&lt;/a&gt;
+            &lt;/div&gt;
+            &lt;div class="btn-group"&gt;
+                &lt;button  type="button" role="button" onclick="getSelected('{% url crud_url.delete %}');" class="btn btn-outline-danger"&gt;&lt;i class="fas fa-trash"&gt;&lt;/i&gt; {{crud_button.delete}}&lt;/button&gt;
+            &lt;/div&gt;
+            &lt;div class="btn-group"&gt;
+                &lt;button role="button" class="btn btn-outline-secondary" onclick="cancelSelection();" &gt;&lt;i class="fas fa-times"&gt;&lt;/i&gt; {{crud_button.cancel}}&lt;/button&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    {% include table_template %}
+&lt;/div&gt;
+{% endblock %}
+</code></pre>
+{% endverbatim %}
+{% endblock content %}

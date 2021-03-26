@@ -1,2 +1,3 @@
 recursive-include blitz_work/templates *
 recursive-include blitz_work/static *
+recursive-include blitz_work/doc *

@@ -1,0 +1,89 @@
+{% extends 'doc/en/base.html' %}
+{% load static %}
+{% block content %}
+{% verbatim %}
+<h1 class="text-white">Table</h1>
+<pre><code>
+{% extends 'blitz_crud_table.html' %}
+</code></pre>
+<pre><code>
+{% block blitz_crud_table_template %}
+&lt;div class="table-responsive"&gt;
+    {% block blitz_crud_table %}
+    &lt;table class="{% block blitz_crud_table_class %}table table-hover blitzTable{% endblock blitz_crud_table_class %}"&gt;
+        {% if context.show_caption %}{% block blitz_crud_table_caption %}&lt;caption&gt;{% if context.title_as_caption %}{{context.title}}{% else %}{{context.caption}}{% endif %}&lt;/caption&gt;{% endblock blitz_crud_table_caption %}{% endif %}
+        &lt;thead&gt;
+            {% block blitz_crud_table_headers %}    
+            &lt;tr&gt;
+            {% block blitz_crud_table_select_all %}
+            &lt;th scope="col-auto"&gt;
+                &lt;div class="custom-control custom-checkbox"&gt;
+                    &lt;input type="checkbox" class="custom-control-input blitzCheckAll" id="blitzTableSelectAllButton"&gt;
+                    &lt;label class="custom-control-label" for="blitzTableSelectAllButton"&gt;&lt;span class="str-only"&gt;&lt;/span&gt;&lt;/label&gt;
+                &lt;/div&gt;
+            &lt;/th&gt;
+            {% endblock blitz_crud_table_select_all %}
+            {% block blitz_crud_table_headers_populate %}
+            {% for header in context.headers %}
+                {% block blitz_crud_table_header %}&lt;th scope="col"&gt;&lt;a href="?table={{context.caption}}&order={{header.direction}}{{header.column}}{{context.search}}"&gt;{{header.text}}&lt;span&gt;&lt;i class="{% block blitz_crud_table_header_class %}fa fa-caret-{% if header.direction %}down{%else%}up{%endif%}{% endblock blitz_crud_table_header_class %}" &gt;&lt;/i&gt;&lt;/span&gt;&lt;/a&gt;&lt;/th&gt;{% endblock blitz_crud_table_header %}
+            {% endfor %}
+            {% endblock blitz_crud_table_headers_populate %}
+            &lt;/tr&gt;
+            {% endblock blitz_crud_table_headers %}
+        &lt;/thead&gt;
+        &lt;tbody&gt;
+            {% block blitz_crud_table_body%}
+            {% for row in context.values %}
+                {% block blitz_crud_table_body_row %}
+                &lt;tr class="{% block blitz_crud_table_row_class %}blitzTr{% endblock blitz_crud_table_row_class %}"&gt;
+                    &lt;input type="hidden" value="{{row.pk}}" name="pk-{{forloop.counter0}}" id="pk-{{forloop.counter0}}"&gt;
+                    {% block blitz_crud_table_row_select %}
+                    &lt;th scope="row"&gt;
+                        &lt;div class="custom-control custom-checkbox"&gt;
+                            &lt;input type="checkbox" class="custom-control-input blitzCheck" id="blitz-select-{{forloop.counter0}}"&gt;
+                            &lt;label class="custom-control-label" for="blitz-select-{{forloop.counter0}}"&gt;&lt;span class="str-only"&gt;&lt;/span&gt;&lt;/label&gt;
+                        &lt;/div&gt;
+                    &lt;/th&gt;
+                    {% endblock blitz_crud_table_row_select %}
+                    {% block blitz_crud_table_row_values_populate %}
+                    {% for value in row.values %}
+                        {% block blitz_crud_table_row_value %}
+                        &lt;td&gt;{{value}}&lt;/td&gt;
+                        {% endblock blitz_crud_table_row_value %}
+                    {% endfor %}
+                    {% endblock blitz_crud_table_row_values_populate %}
+                &lt;/tr&gt;
+                {% endblock blitz_crud_table_body_row %}
+            {% endfor %}
+            {% endblock blitz_crud_table_body %}
+        &lt;/tbody&gt;
+    &lt;/table&gt;{% endblock blitz_crud_table %}{% endblock blitz_crud_table_template %}{% block blitz_crud_pagination %}
+&lt;/div&gt;
+&lt;nav&gt;
+    &lt;ul class="pagination justify-content-end"&gt;
+        &lt;li class="page-item {% if context.page.has_previous is False %}disabled{% endif %}"&gt;
+            &lt;a class="page-link" href="?table={{context.caption}}&order={{context.current_order}}&page={% if context.page.has_previous %}{{ context.page.previous_page_number }}{% else %}{{context.page.number}}{% endif %}{{context.search}}"&gt;&laquo;&lt;/a&gt;
+        &lt;/li&gt;
+        &lt;li class="page-item"&gt;
+            &lt;div class="dropdown"&gt;
+                &lt;button class="page-link dropdown-toggle" type="button" id="blitzPaginationDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"&gt;
+                    {{context.page.number}}
+                &lt;/button&gt;
+                &lt;div class="dropdown-menu" aria-labelledby="blitzPaginationDropdownMenuButton"&gt;
+                    {% for page in context.page.paginator.page_range %}
+                    &lt;a class="dropdown-item {% if page == context.page.number %}active{% endif %}" href="?table={{context.caption}}&order={{context.current_order}}&page={{ page }}{{context.search}}"&gt;{{ page }}&lt;/a&gt;
+                    {% endfor %}
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/li&gt;
+        &lt;li class="page-item disabled"&gt;&lt;a class="page-link" &gt;of&lt;/a&gt;&lt;/li&gt;
+        &lt;li class="page-item"&gt;&lt;a class="page-link" href="?table={{context.caption}}&order={{context.current_order}}&page={{ context.page.paginator.num_pages }}{{context.search}}"&gt;{{ context.page.paginator.num_pages }}&lt;/a&gt;&lt;/li&gt;
+        &lt;li class="page-item {% if context.page.has_next is False %}disabled{% endif %}"&gt;
+        &lt;a class="page-link" href="?table={{context.caption}}&order={{context.current_order}}&page={% if context.page.has_next %}{{ context.page.next_page_number }}{% else %}{{context.page.number}}{% endif %}{{context.search}}"&gt;&raquo;&lt;/a&gt;
+        &lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/nav&gt;
+{% endblock blitz_crud_pagination %}
+</code></pre>
+{% endverbatim %}
+{% endblock content %}

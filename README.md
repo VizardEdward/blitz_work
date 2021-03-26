@@ -127,4 +127,4 @@
         python manage.py runserver localhost:8000
         ```
 
-   3. Go to the url [blitz-doc/](http://localhost:8000/blitz-doc/)
+   3. Go to the url [blitz-doc-en/](http://localhost:8000/blitz-doc-en/) or [blitz-doc-es/](http://localhost:8000/blitz-doc-es/)

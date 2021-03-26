@@ -1,0 +1,179 @@
+{% extends 'doc/en/base.html' %}
+{% load static %}
+{% block content %}
+{% verbatim %}
+<h1 class="text-white">CRUD</h1>
+<pre><code>
+from Book.models import Author, Book
+from blitz_work.blitzcrud import BlitzCRUD
+
+
+class BookCRUD(BlitzCRUD):
+    show_title = True
+    show_caption = False
+    caption_is_title = True
+    extend_template = "base.html"
+    data = Book
+</code></pre>
+<p class="text-white"><blitztext>Blitz Work</blitztext> provides many options to facilitate its use and visualization.</p>
+<pre><code>
+class BlitzCRUD(View):
+    template_name = "blitz_base_crud.html"  
+    extend_template = "blitz_base_offline.html"
+    table_template = "blitz_crud_table.html"
+    create_template = "blitz_crud_create.html"
+    update_template = "blitz_crud_update.html"
+    delete_template = "blitz_crud_delete.html"
+    detail_template = "blitz_crud_detail.html"
+    data = None
+    paginate_by = 20
+    title = None
+    form = None
+    formset = None
+    show_caption = True
+    create_title = "Create"
+    show_title = True
+    caption_is_title = False
+    concat_function = default_concatenation
+    exclude = ['id', ]
+    delete_messages = {"success": "Element deleted",
+                       "error": "Error on delete"}
+    delete_title = "Delete"
+    update_title = "Edit"
+    detail_title = "Detail"
+    delete_text = "The following elements will be deleted, do you want to delete them?"
+    crud_buttons = {"add": "Add", "create": "Create", "details": "Details", "update": "Update",
+                    "edit": "Edit", "delete": "Delete", "cancel": "Cancel", "return": "Return", "search": "Search"}
+    allow_anonimous_in_debug = True
+</code></pre>
+<h4 class="text-white">Template variables.</h4>
+<ul>
+<li class="text-white">
+<h5 class="text-white"><i>template_name</i></h5>
+<p class="text-white">Main template.This is the template that renders the list view.
+Must contain the search buttons, add, edit, delete, cancel and details as well as
+The data table.</p>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>extend_template</i></h5>
+<p class="text-white">This is the template that will be used as a basis all the views of not being modified.
+Its value will be that of the variable (extend_template) on the templates that provides <blitztext>Blitz Work</blitztext></p>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>table_template</i></h5>
+<p class="text-white">This is the template that will be used to show the table in the list view of
+Do not be modified.</p>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>create_template</i></h5>
+<p class="text-white">This is the template that will be used for the creating view.</p>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>update_template</i></h5>
+<p class="text-white">This is the template that will be used for the update view.</p>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>delete_template</i></h5>
+<p class="text-white">This is the template that will be used for the delete view.</p>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>detail_template</i></h5>
+<p class="text-white">This is the template that will be used for the details view.</p>
+</li>
+</ul>
+<h4 class="text-white">Data variables and list.</h4>
+<ul>
+<li class="text-white">
+<h5 class="text-white"><i>data</i></h5>
+<p class="text-white">Specifies the model that CRUD uses.</p>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>paginate_by</i></h5>
+<p class="text-white">Specifies the number of rows per page in the crud.</p>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>form</i></h5>
+<p class="text-white">Specifies the form that will be used for the Add to Crud view.
+If it is not specified <blitztext>Blitz Work</blitztext> will create a default form with all
+Fields of the model.</p>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>formset</i></h5>
+<p class="text-white">Specifies the form set that will be used for the edit view and details
+In CRUD.If not specified <blitztext>Blitz Work</blitztext> will create one by default with all
+Fields of the model.(<blitztext>Blitz Work</blitztext> provides multiple edition and view
+Of multiple details, this is why it is necessary.).</p>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>concat_function</i></h5>
+<p class="text-white">Specifies the function that will be used to concatenate the elements in a relationship (M2M),
+In the list view.If it is not specified <blitztext>Blitz Work</blitztext> will use the following function.</p>
+<pre><code>
+def default_concatenation(self, list):
+    """
+    Default concatenation function
+    """
+    return ", ".join(list)
+</code></pre>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>exclude</i></h5>
+<p class="text-white">Specify the fields that will be excluded from the model in the table.</p>
+</li>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>allow_anonimous_in_debug</i></h5>
+<p class="text-white"><blitztext>Blitz Work</blitztext>ChecksIfTheUserHasPermissionsForEachOfThe
+viewsAndActionsThisVariableAllowsAUserWithoutAuthenticatingToSkipTheRestrictions.
+thisIsOnlyIfTheCurrentProjectIsInDebugMode</p>
+</li>
+</ul>
+<h4 class="text-white">Text variables and titles.</h4>
+<ul>
+<li class="text-white">
+<h5 class="text-white"><i>title</i></h5>
+<p class="text-white">Specifies the title of the list view into the crud.</p>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>create_title</i></h5>
+<p class="text-white">Specifies the title of the creation view on the crud.</p>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>update_title</i></h5>
+<p class="text-white">Specifies the title of the actulating view in the crud.</p>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>detail_title</i></h5>
+<p class="text-white">Specifies the title of the details view in the crud.</p>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>delete_title</i></h5>
+<p class="text-white">Specifies the title of the disposal view on the crud.</p>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>delete_text</i></h5>
+<p class="text-white">Specifies the message from the removal view on the crud.</p>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>delete_messages</i></h5>
+<p class="text-white">Specify the text of crude removal messages.</p>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>crud_buttons</i></h5>
+<p class="text-white">Specify the text of the crud buttons.</p>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>show_title</i></h5>
+<p class="text-white">Specifies whether the title is displayed in the crude list view.</p>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>show_caption</i></h5>
+<p class="text-white">Specifies whether the description of the crud table is displayed.Its courage courage to the verbose_name of the model.</p>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>caption_is_title</i></h5>
+<p class="text-white">Specifies whether the verbose_name of the model will be used as a title.</p>
+</li>
+</ul>
+{% endverbatim %}
+{% endblock content %}

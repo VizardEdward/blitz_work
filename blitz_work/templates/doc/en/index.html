@@ -1,0 +1,147 @@
+{% extends 'doc/en/base.html' %}
+{% block content %}
+                <h1 class="text-white">Installation</h1>
+                <h6 class="text-white">Install <blitztext>BlitzWork</blitztext>in console.</h6>
+                <div>
+                    <pre>
+                        <code>
+pip install blitz_work
+                        </code>
+                    </pre>
+                </div>
+                <h1 class="text-white">How to use.</h1>
+                <ol>
+                <li class="text-white">
+                        <h6 class="text-white">Include <blitztext>Blitz Work</blitztext> in settings.py.</h6>
+                        <div>
+                            <pre>
+                                <code>
+INSTALLED_APPS = [
+    ...,
+    ...,
+    'blitz_work',
+]
+                                </code>
+                            </pre>
+                        </div>
+                    </il>
+                    <li class="text-white">
+                        <h6 class="text-white">Create models.</h6>
+                        <div>
+                            <pre>
+                                <code>
+from django.db import models
+
+
+class Author(models.Model):
+    name = models.CharField(verbose_name="Name", max_length=255)
+    birth_date = models.DateField(verbose_name="Date of Birth")
+
+
+    class Meta:
+        verbose_name = "Author"
+        verbose_name_plural = "Authors"
+
+    def __str__(self):
+        return self.name
+
+
+
+class Book(models.Model):
+    title = models.CharField(verbose_name="Title", max_length=255)
+    publication_date = models.DateField(verbose_name="Publication date")
+    authors = models.ManyToManyField(Author,verbose_name="Authors")
+
+
+    class Meta:
+        verbose_name = "Book"
+        verbose_name_plural = "Books"
+
+    def __str__(self):
+        return self.title
+                                </code>
+                            </pre>
+                        </div>
+                    </il>
+                    <li class="text-white">
+                        <h6 class="text-white">Create a template.</h6>
+                        <div>
+                            <pre>
+                                <code class="language-html">
+            {% verbatim %}
+            {% extends 'blitz_base_offline.html' %}
+            {% block main %}
+                &lt;nav class="navbar navbar-expand-lg navbar-light bg-light"&gt;
+                    &lt;a class="navbar-brand" href="#"&gt;Test&lt;/a&gt;
+                    &lt;button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation"&gt;
+                        &lt;span class="navbar-toggler-icon"&gt;&lt;/span&gt;
+                    &lt;/button&gt;
+                    &lt;div class="collapse navbar-collapse" id="navbarNavDropdown"&gt;
+                        &lt;ul class="navbar-nav"&gt;
+                        &lt;li class="nav-item"&gt;
+                            &lt;a class="nav-link" href="{% url 'book/view' %}"&gt;Books&lt;/a&gt;
+                        &lt;/li&gt;
+                        &lt;li class="nav-item"&gt;
+                            &lt;a class="nav-link" href="{% url 'author/view' %}"&gt;Authors&lt;/a&gt;
+                        &lt;/li&gt;
+                        &lt;/ul&gt;
+                    &lt;/div&gt;
+                &lt;/nav&gt;
+                {% block content %}{% endblock %}
+            {% endblock %}
+            {% endverbatim %}
+                                </code>
+                            </pre>
+                        </div>
+                    </il>
+                    <li class="text-white">
+                        <h6 class="text-white">Create the views.</h6>
+                        <div>
+                            <pre>
+                                <code>
+from Book.models import Author, Book
+from blitz_work.blitzcrud import BlitzCRUD
+
+
+class BookCRUD(BlitzCRUD):
+    show_title = True
+    show_caption = False
+    caption_is_title = True
+    extend_template = "base.html"
+    data = Book
+
+class AuthorCRUD(BlitzCRUD):
+    show_title = True
+    show_caption = False
+    caption_is_title = True
+    extend_template = "base.html"
+    data = Author
+                                </code>
+                            </pre>
+                        </div>
+                    </il>
+                    <li class="text-white">
+                        <h6 class="text-white">Include the URLs.</h6>
+                        <div>
+                            <pre>
+                                <code>
+from app.views import AuthorCRUD, BookCRUD
+from django.urls import path,include
+from blitz_work.blitzcrud import get_urls
+
+urlpatterns = [
+    path('book/', include(get_urls(BookCRUD,"book"))),
+    path('author/', include(get_urls(AuthorCRUD,"author"))),
+]
+                                </code>
+                            </pre>
+                        </div>
+                    </il>
+                    <li class="text-white">
+                        <h6 class="text-white">Result.</h6>
+                        <div>
+                            <img src="../static/doc/images/preview.png" class="img-fluid" alt="captura de pantalla">
+                        </div>
+                    </il>
+                </ol>
+{% endblock content %}

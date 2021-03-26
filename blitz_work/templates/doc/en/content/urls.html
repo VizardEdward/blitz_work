@@ -1,8 +1,8 @@
-{% extends 'doc/base.html' %}
+{% extends 'doc/en/base.html' %}
 {% load static %}
 {% block content %}
 {% verbatim %}
-<h1 class="text-white">URLs de <blitztext>Blitz Work</blitztext>.</h1>
+<h1 class="text-white"><blitztext>Blitz Work's</blitztext> urls</h1>
 <pre><code>
 from app.views import AuthorCRUD, BookCRUD
 from django.urls import path,include
@@ -13,13 +13,13 @@ urlpatterns = [
     path('author/', include(get_urls(AuthorCRUD))),
 ]
 </code></pre>
-<p class="text-white"><blitztext>Blitz Work</blitztext> utiliza cinco urls. (&lt;crudname&gt;/view), 
+<p class="text-white"><blitztext>Blitz Work</blitztext> uses five URLs. (&lt;crudname&gt;/view), 
 (&lt;crudname&gt;/detail), (&lt;crudname&gt;/create), (&lt;crudname&gt;/update), (&lt;crudname&gt;/delete).</p>
-<p class="text-white">Al ejecutar:</p>
+<p class="text-white">When executing:</p>
 <pre><code>
 path('book/', include(get_urls(BookCRUD,"book"))),
 </code></pre>
-<p class="text-white">Se crean las siguientes urls:</p>
+<p class="text-white">The following URLs are created:</p>
 <pre><code>
 'book/view/' [name= "book/view"]
 'book/create/' [name= "book/create"]
@@ -27,21 +27,21 @@ path('book/', include(get_urls(BookCRUD,"book"))),
 'book/update/' [name= "book/update"]
 'book/delete/' [name= "book/delete"]
 </code></pre>
-<p class="text-white">El segundo par&aacute;metro especificado en la funci&oacute;n get_urls(...,...) corresponde a el nombre
-que tendr&aacute; la url. Este par&aacute;metro puede ser omitido, al ser omitido <blitztext>Blitz Work</blitztext> utilizar&aacute;
-el verbose_name del modelo especificado.</p>
+<p class="text-white">The second parameter specified in the get_urls function (..., ...) corresponds to the name
+that will have the URL.This parameter can be omitted, when omitted <blitztext>Blitz Work</blitztext> will use
+The verbose_name of the specified model.</p>
 <p class="text-white">Al ejecutar:</p>
 <pre><code>
 path('book/', include(get_urls(BookCRUD))),
 </code></pre>
-<p class="text-white"> Para este modelo:</p>
+<p class="text-white">For this model:</p>
 <pre><code>
 class Book(models.Model):
     ...
     class Meta:
         verbose_name = "example"
 </code></pre>
-<p class="text-white">Se crean las siguientes urls:</p>
+<p class="text-white">The following URLs are created:</p>
 <pre><code>
 'book/view/' [name= "example/view"]
 'book/create/' [name= "example/create"]
@@ -49,9 +49,9 @@ class Book(models.Model):
 'book/update/' [name= "example/update"]
 'book/delete/' [name= "example/delete"]
 </code></pre>
-<p class="text-white">Se puede acceder a estas url desde una plantilla de la siguiente forma:</p>
+<p class="text-white">You can access these URLs from a template as follows:</p>
 <pre><code>
-&lt;a href="{% url 'example/view' %}"&gt;Libros&lt;/a&gt;
+&lt;a href="{% url 'example/view' %}"&gt;Books&lt;/a&gt;
 </code></pre>
 {% endverbatim %}
 {% endblock content %}

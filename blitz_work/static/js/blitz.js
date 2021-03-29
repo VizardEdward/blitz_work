@@ -97,6 +97,12 @@ $(document).ready(function () {
         theme: "bootstrap4",
         width: 'form-control'
     });
+    $('#blitzCrudSearchInput').keyup(function(event){
+        if(event.keyCode===13){
+            $('#blitzCrudSearchButton').click();
+            event.preventDefault();
+        }
+    });
     $("fieldset[disabled] select").prop('disabled',true);
     // $("table.blitzTable").on("click", ".blitzTr", function () {
     //     let checkBox = $(this).find("th div input");

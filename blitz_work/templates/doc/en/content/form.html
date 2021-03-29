@@ -9,12 +9,16 @@ class BlitzModelForm(forms.ModelForm):
     mutate_text_area = True
     mutate_select = True
     mutate_select_multiple = True
+    mutate_date_input = True
+    number_input_for_date = True
             
 class BlitzForm(forms.Form):
     mutate_inputs = True
     mutate_text_area = True
     mutate_select = True
     mutate_select_multiple = True
+    mutate_date_input = True
+    number_input_for_date = True
 </code></pre>
 <p class="text-white"><blitztext>Blitz Work</blitztext> forms add the class "form-control" to the
 INPUT, SELECT AND TEXTAREA.In addition to adding the "blitzselect" class to the SELECT, this class will be used
@@ -23,19 +27,27 @@ By JavaScript of <blitztext>Blitz Work</blitztext> to modify your behavior.</p>
 <ul>
 <li class="text-white">
 <h5 class="text-white"><i>mutate_text_area</i></h5>
-<p class="text-white">Specifies whether the INPUT of the form will be modified.</p>
+<p class="text-white">Specifies whether the Input of the form will be modified.</p>
 </li>
 <li class="text-white">
 <h5 class="text-white"><i>mutate_text_area</i></h5>
-<p class="text-white">Specifies whether the textarese of the form will be modified.</p>
+<p class="text-white">Specifies whether the TextArea of the form will be modified.</p>
 </li>
 <li class="text-white">
 <h5 class="text-white"><i>mutate_select</i></h5>
-<p class="text-white">Specifies whether the simple selection selects of the form will be modified.</p>
+<p class="text-white">Specifies whether the simple selection Selects of the form will be modified.</p>
 </li>
 <li class="text-white">
 <h5 class="text-white"><i>mutate_select_multiple</i></h5>
-<p class="text-white">Specifies whether the selection selects multiple form will be modified.</p>
+<p class="text-white">Specifies whether the multiple choices Selects of the form will be modified.</p>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>mutate_date_input</i></h5>
+<p class="text-white">Specifies whether the DateInput of the  form will be modified.</p>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>number_input_for_date</i></h5>
+<p class="text-white">Specifies if NumberInput or SelectDateWidget is used to modify the DateInputs.</p>
 </li>
 </ul>
 {% endverbatim %}

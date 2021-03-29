@@ -75,10 +75,9 @@ class BlitzCRUD(View):
             self.__model = self.data.model
         elif inspect.isclass(self.data):
             if issubclass(self.data, Model):
-                self.caption = self.data._meta.verbose_name_plural
                 self.__fields, self.__headers, self.__foreignkey_fields, self.__many_to_many_fields = self.extract_model_fields(
                     self.data._meta.get_fields())
-                self.__caption = self.data._meta.verbose_name_plural
+                self.__caption = self.data._meta.verbose_name_plural.capitalize()
                 self.__app_name = self.data._meta.app_label
                 self.__deletion_query = self.data.objects
                 self.__model_name = self.data._meta.model_name

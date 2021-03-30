@@ -1,11 +1,8 @@
 import ast
-import inspect
 
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth.decorators import permission_required
 from django.db.models import Model, Q
-from django.db.models.query import QuerySet
 from django.forms.models import modelformset_factory
 from django.http.response import HttpResponseForbidden, HttpResponseNotAllowed
 from django.shortcuts import redirect, render
@@ -23,22 +20,22 @@ def default_concatenation(self, list):
 
 
 class BlitzCRUD(View):
-    template_name = "blitz_base_crud.html"  # template for render
+    template_name = "blitz_base_crud.html"
     extend_template = "blitz_base_offline.html"
     table_template = "blitz_crud_table.html"
     create_template = "blitz_crud_create.html"
     update_template = "blitz_crud_update.html"
     delete_template = "blitz_crud_delete.html"
     detail_template = "blitz_crud_detail.html"
-    data = None  # Model or QuerySet
+    model = None
     paginate_by = 20
     title = None
     form = None
     formset = None
-    show_caption = True
+    show_caption = False
     create_title = "Create"
     show_title = True
-    caption_is_title = False
+    caption_is_title = True
     concat_function = default_concatenation
     exclude = ['id', ]
     crud_base_name = ""
@@ -64,30 +61,21 @@ class BlitzCRUD(View):
     __model_name = None
 
     def __init__(self, **kwargs):
-        if isinstance(self.data, QuerySet):
+        if getattr(self,"data"):
+            self.model = getattr(self,"data")
+            print("\033[93mPlease use model intead of data to specify the model. Blitz Work no longer support Queryset\033[0m")
+        if issubclass(self.model, Model):
             self.__fields, self.__headers, self.__foreignkey_fields, self.__many_to_many_fields = self.extract_model_fields(
-                self.data.model._meta.get_fields())
-            self.__deletion_query = self.data
-            self.__optim_query = self.data
-            self.__caption = self.data.model._meta.verbose_name_plural
-            self.__app_name = self.data.model._meta.app_label
-            self.__model_name = self.data.model._meta.model_name
-            self.__model = self.data.model
-        elif inspect.isclass(self.data):
-            if issubclass(self.data, Model):
-                self.__fields, self.__headers, self.__foreignkey_fields, self.__many_to_many_fields = self.extract_model_fields(
-                    self.data._meta.get_fields())
-                self.__caption = self.data._meta.verbose_name_plural.capitalize()
-                self.__app_name = self.data._meta.app_label
-                self.__deletion_query = self.data.objects
-                self.__model_name = self.data._meta.model_name
-                self.__optim_query = self.optimice_query(
-                    self.__foreignkey_fields, self.__many_to_many_fields)
-                self.__model = self.data
-            else:
-                raise TypeError(f"{self.data} is not {Model} or {QuerySet}")
+                self.model._meta.get_fields())
+            self.__caption = self.model._meta.verbose_name_plural.capitalize()
+            self.__app_name = self.model._meta.app_label
+            self.__deletion_query = self.model.objects
+            self.__model_name = self.model._meta.model_name
+            self.__optim_query = self.optimice_query(
+                self.__foreignkey_fields, self.__many_to_many_fields)
+            self.__model = self.model
         else:
-            raise TypeError(f"{self.data} is not {Model} or {QuerySet}")
+            raise TypeError(f"{self.model} is not {Model}")  # or {QuerySet}")
         if self.form is None:
             self.form = self.get_utility_form(self.__model)
         if self.formset is None:
@@ -265,8 +253,8 @@ class BlitzCRUD(View):
         """
         Return an optimal query
         """
-        query = self.data.objects.select_related(
-            ",".join(foreignkey_fields)) if len(foreignkey_fields) else self.data.objects
+        query = self.model.objects.select_related(
+            ",".join(foreignkey_fields)) if len(foreignkey_fields) else self.model.objects
         query = query.prefetch_related(
             ",".join(many_to_many_fields)) if len(many_to_many_fields) else query
         return query
@@ -324,7 +312,15 @@ def get_urls(crud_class: BlitzCRUD, crud_name=None):
     Returns:
         list: list of paths for the CRUD
     """
-    crud_name = crud_name or crud_class.data._meta.verbose_name
+    
+    if crud_class.model is None:
+        if getattr(crud_class,"data"):
+            crud_name = getattr(crud_class,"data")._meta.verbose_name
+            print('\033[93mPlease use model intead of data to specify the model. Blitz Work no longer support Queryset\033[0m')
+        else:
+            raise Exception("No model provided")
+    else:
+        crud_name = crud_name or crud_class.model._meta.verbose_name
     crud_view = crud_class.as_view(crud_base_name=crud_name)
     return [path("view/", crud_view,
                  name=crud_name+"/view"),

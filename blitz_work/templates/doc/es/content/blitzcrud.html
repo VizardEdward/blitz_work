@@ -25,7 +25,7 @@ class BlitzCRUD(View):
     update_template = "blitz_crud_update.html"
     delete_template = "blitz_crud_delete.html"
     detail_template = "blitz_crud_detail.html"
-    data = None
+    model = None
     paginate_by = 20
     title = None
     form = None
@@ -84,7 +84,7 @@ no ser modificada.</p>
 <h4 class="text-white">Variables de datos y lista.</h4>
 <ul>
 <li class="text-white">
-<h5 class="text-white"><i>data</i></h5>
+<h5 class="text-white"><i>model</i></h5>
 <p class="text-white">Especifica el modelo que utilizara el CRUD.</p>
 </li>
 <li class="text-white">

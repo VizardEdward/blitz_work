@@ -1,0 +1,16 @@
+{% extends 'doc/es/base.html' %}
+{% load static %}
+{% block content %}
+{% verbatim %}
+<h1 class="text-white">Switch de modo oscuro</h1>
+<pre><code>
+{% include 'dark_mode_switch.html' %}
+</code></pre>
+<pre><code>
+&lt;div class="custom-control custom-switch"&gt;
+    &lt;input type="checkbox" class="custom-control-input" id="blitz-dark-mode-switch" title="{{dark_mode_switch_label|default:"Dark Mode Switch"}}" data-toggle="tooltip"&gt;
+    &lt;label class="custom-control-label" for="blitz-dark-mode-switch"&gt;{{dark_mode_switch_label|default:'&lt;span class="str-only"&gt;&lt;/span&gt;'}}&lt;/label&gt;
+&lt;/div&gt;
+</code></pre>
+{% endverbatim %}
+{% endblock content %}

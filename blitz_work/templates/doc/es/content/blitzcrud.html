@@ -36,6 +36,7 @@ class BlitzCRUD(View):
     caption_is_title = False
     concat_function = default_concatenation
     exclude = ['id', ]
+    dark_mode_switch_label = None
     delete_messages = {"success": "Element deleted",
                        "error": "Error on delete"}
     delete_title = "Delete"
@@ -173,6 +174,10 @@ Esto es solo si el proyecto actual esta en modo DEBUG.</p>
 <li class="text-white">
 <h5 class="text-white"><i>caption_is_title</i></h5>
 <p class="text-white">Especifica si se utilizar&aacute; como t&iacute;tulo el verbose_name del modelo.</p>
+</li>
+<li class="text-white">
+<h5 class="text-white"><i>dark_mode_switch_label</i></h5>
+<p class="text-white">Especifica texto del switch de modo oscuro.</p>
 </li>
 </ul>
 {% endverbatim %}

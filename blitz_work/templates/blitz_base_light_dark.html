@@ -1,0 +1,28 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="{% block language %}en{% endblock language %}">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="{% static 'css/toggle-bootstrap.min.css' %}">
+        <link rel="stylesheet" href="{% static 'css/toggle-bootstrap-dark.min.css' %}">
+        <link rel="stylesheet" href="{% static 'css/select2.min.css' %}">
+        <link rel="stylesheet" href="{% static 'css/select2-bootstrap-dark.min.css' %}">
+        <link rel="stylesheet" href="{% static 'css/all.min.css' %}">
+        <link rel="stylesheet" href="{% static 'css/blitz.css' %}">
+        <script src="{% static 'js/jquery-3.5.1.min.js' %}"></script>
+        <script src="{% static 'js/popper.min.js' %}"></script>
+        <script src="{% static 'js/bootstrap.min.js' %}"></script>
+        <script src="{% static 'js/select2.min.js' %}"></script>
+        <script src="{% static 'js/blitz.js' %}"></script>
+        {% block extra_assets %}{% endblock %}
+        <title>
+            {% block title %}{% endblock %}
+        </title>
+    </head>
+
+    <body class="{% block theme %}bootstrap{% endblock theme %}">
+        {% block main %}{% block content %}{% endblock %}{% endblock %}
+    </body>
+</html>

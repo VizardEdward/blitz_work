@@ -104,6 +104,25 @@ $(document).ready(function () {
         }
     });
     $("fieldset[disabled] select").prop('disabled',true);
+    $("#blitz-dark-mode-switch").change(function(){
+        let value = $(this).prop('checked');
+        if(value){
+            $(document.body).removeClass("bootstrap").addClass("bootstrap-dark");
+            localStorage.setItem("blitz-dark-mode", true);
+            console.log(localStorage.getItem("blitz-dark-mode"));
+        }else{
+            $(document.body).removeClass("bootstrap-dark").addClass("bootstrap");
+            localStorage.setItem("blitz-dark-mode", false);
+        }
+    });
+    if(localStorage.getItem("blitz-dark-mode")==="true"){
+        $("#blitz-dark-mode-switch").prop('checked',true);
+        $(document.body).removeClass("bootstrap").addClass("bootstrap-dark");
+    }else{
+        $("#blitz-dark-mode-switch").prop('checked',false);
+        $(document.body).removeClass("bootstrap-dark").addClass("bootstrap");
+        localStorage.setItem("blitz-dark-mode", false)
+    }
     // $("table.blitzTable").on("click", ".blitzTr", function () {
     //     let checkBox = $(this).find("th div input");
     //     checkBox.prop('checked',!checkBox.prop('checked'));

@@ -41,6 +41,9 @@ def blitz_doc_blitz_crud(request):
 def blitz_doc_blitz_form(request):
     return render(request, "doc/es/content/form.html")
 
+def blitz_doc_switch(request):
+    return render(request, "doc/es/content/switch.html")
+
 def blitz_doc_en(request):
     return render(request, "doc/en/index.html")
 
@@ -80,6 +83,9 @@ def blitz_doc_blitz_crud_en(request):
 def blitz_doc_blitz_form_en(request):
     return render(request, "doc/en/content/form.html")
 
+def blitz_doc_switch_en(request):
+    return render(request, "doc/en/content/switch.html")
+
 urlpatterns = [
     #!ES
     path("blitz-doc-es/",blitz_doc,name="blitz-doc-es"),
@@ -95,6 +101,7 @@ urlpatterns = [
     path("blitz-doc-delete-es/",blitz_doc_delete,name="blitz-doc-delete-es"),
     path("blitz-doc-blitz-crud-es/",blitz_doc_blitz_crud,name="blitz-doc-blitz-crud-es"),
     path("blitz-doc-blitz-form-es/",blitz_doc_blitz_form,name="blitz-doc-blitz-form-es"),
+    path("blitz-doc-switch-es/",blitz_doc_switch,name="blitz-doc-switch-es"),
     #!EN
     path("blitz-doc-en/",blitz_doc_en,name="blitz-doc-en"),
     path("blitz-doc-blitz-en/",blitz_doc_blitz_en,name="blitz-doc-blitz-en"),
@@ -109,4 +116,5 @@ urlpatterns = [
     path("blitz-doc-delete-en/",blitz_doc_delete_en,name="blitz-doc-delete-en"),
     path("blitz-doc-blitz-crud-en/",blitz_doc_blitz_crud_en,name="blitz-doc-blitz-crud-en"),
     path("blitz-doc-blitz-form-en/",blitz_doc_blitz_form_en,name="blitz-doc-blitz-form-en"),
+    path("blitz-doc-switch-en/",blitz_doc_switch_en,name="blitz-doc-switch-en"),
 ]

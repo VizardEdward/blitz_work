@@ -122,7 +122,7 @@ class BlitzCRUD(View):
                     return redirect(self.crud_base_name+"/view")
                 else:
                     return render(request, self.create_template, context={
-                        "form": form, "crud_url": self.get_crud_url(), "crud_button": self.crud_buttons, "extend_template": self.extend_template, "dark_mode_switch_label":self.dark_mode_switch_label, "dark_mode_switch_label":self.dark_mode_switch_label, "context": {"title": self.create_title}})
+                        "form": form, "crud_url": self.get_crud_url(), "crud_button": self.crud_buttons, "extend_template": self.extend_template, "dark_mode_switch_label":self.dark_mode_switch_label, "context": {"title": self.create_title}})
             else:
                 return HttpResponseNotAllowed(["POST"])
         else:

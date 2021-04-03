@@ -62,7 +62,7 @@ class BlitzCRUD(View):
     __model_name = None
 
     def __init__(self, **kwargs):
-        if getattr(self,"data"):
+        if getattr(self,"data", None):
             self.model = getattr(self,"data")
             print("\033[93mPlease use model intead of data to specify the model. Blitz Work no longer support Queryset\033[0m")
         if issubclass(self.model, Model):
@@ -315,7 +315,7 @@ def get_urls(crud_class: BlitzCRUD, crud_name=None):
     """
     
     if crud_class.model is None:
-        if getattr(crud_class,"data"):
+        if getattr(crud_class,"data", None):
             crud_name = getattr(crud_class,"data")._meta.verbose_name
             print('\033[93mPlease use model intead of data to specify the model. Blitz Work no longer support Queryset\033[0m')
         else:

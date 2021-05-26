@@ -20,4 +20,4 @@ def automatic_crud(app_names: list, language: int = 0, extend_template_name: str
             delete_text = DELETE_TEXT[language]
             crud_buttons = CRUD_BUTTONS[language]
         cruds.append(AutomaticCRUDHelper)
-    return [path for crud in cruds for path in get_urls(crud,prefix=crud.model._meta.verbose_name + '/')]
+    return [path for crud in cruds for path in get_urls(crud,prefix=crud.model._meta.verbose_name.replace(' ','_') + '/')]

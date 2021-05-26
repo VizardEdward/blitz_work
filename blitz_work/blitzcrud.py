@@ -300,7 +300,7 @@ class BlitzCRUD(View):
                 }
 
 
-def get_urls(crud_class: BlitzCRUD, crud_name=None):
+def get_urls(crud_class: BlitzCRUD, crud_name=None, prefix:str=''):
     """
         Return a list of paths for the class
 
@@ -321,14 +321,14 @@ def get_urls(crud_class: BlitzCRUD, crud_name=None):
     else:
         crud_name = crud_name or crud_class.model._meta.verbose_name
     crud_view = crud_class.as_view(crud_base_name=crud_name)
-    return [path("view/", crud_view,
+    return [path(prefix + "view/", crud_view,
                  name=crud_name+"/view"),
-            path("detail/", crud_view,
+            path(prefix + "detail/", crud_view,
                  name=crud_name+"/detail"),
-            path("create/", crud_view,
+            path(prefix + "create/", crud_view,
                  name=crud_name+"/create"),
-            path("update/", crud_view,
+            path(prefix + "update/", crud_view,
                  name=crud_name+"/update"),
-            path("delete/", crud_view,
+            path(prefix + "delete/", crud_view,
                  name=crud_name+"/delete"),
             ]

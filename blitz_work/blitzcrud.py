@@ -8,7 +8,7 @@ from django.http.response import HttpResponseForbidden, HttpResponseNotAllowed
 from django.shortcuts import redirect, render
 from django.urls import path, resolve
 from django.views import View
-
+from .internationalization import *
 from blitz_work.forms import BlitzModelForm
 
 
@@ -33,21 +33,19 @@ class BlitzCRUD(View):
     form = None
     formset = None
     show_caption = False
-    create_title = "Create"
     show_title = True
     caption_is_title = True
     concat_function = default_concatenation
     exclude = ['id', ]
     dark_mode_switch_label = None
     crud_base_name = ""
-    delete_messages = {"success": "Element deleted",
-                       "error": "Error on delete"}
-    delete_title = "Delete"
-    update_title = "Edit"
-    detail_title = "Detail"
-    delete_text = "The following elements will be deleted, do you want to delete them?"
-    crud_buttons = {"add": "Add", "create": "Create", "details": "Details", "update": "Update",
-                    "edit": "Edit", "delete": "Delete", "cancel": "Cancel", "return": "Return", "search": "Search"}
+    create_title = CREATE_TITLE[0]
+    delete_messages = DELETE_MESSAGES[0]
+    delete_title = DELETE_TITLE[0]
+    update_title = UPDATE_TITLE[0]
+    detail_title = DETAIL_TITLE[0]
+    delete_text = DELETE_TEXT[0]
+    crud_buttons = CRUD_BUTTONS[0]
     allow_anonimous_in_debug = True
     __header_field_map = None
     __deletion_query = None

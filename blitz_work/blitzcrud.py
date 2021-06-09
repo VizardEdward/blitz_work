@@ -252,10 +252,8 @@ class BlitzCRUD(View):
         """
         Return an optimal query
         """
-        query = self.model.objects.select_related(
-            ",".join(foreignkey_fields)) if len(foreignkey_fields) else self.model.objects
-        query = query.prefetch_related(
-            ",".join(many_to_many_fields)) if len(many_to_many_fields) else query
+        query = self.model.objects.select_related(*foreignkey_fields) if len(foreignkey_fields) else self.model.objects
+        query = query.prefetch_related(*many_to_many_fields) if len(many_to_many_fields) else query
         return query
 
     def extract_model_fields(self, model):

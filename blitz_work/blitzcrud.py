@@ -7,6 +7,7 @@ from django.forms.models import modelformset_factory
 from django.http.response import HttpResponseForbidden, HttpResponseNotAllowed
 from django.shortcuts import redirect, render
 from django.urls import path, resolve
+from django.urls.conf import include
 from django.views import View
 from .internationalization import *
 from blitz_work.forms import BlitzModelForm
@@ -37,6 +38,8 @@ class BlitzCRUD(View):
     caption_is_title = True
     concat_function = default_concatenation
     exclude = ['id', ]
+    include = {}
+    include_header = {}
     dark_mode_switch_label = None
     crud_base_name = ""
     create_title = CREATE_TITLE[0]
@@ -254,6 +257,7 @@ class BlitzCRUD(View):
         """
         query = self.model.objects.select_related(*foreignkey_fields) if len(foreignkey_fields) else self.model.objects
         query = query.prefetch_related(*many_to_many_fields) if len(many_to_many_fields) else query
+        query = query.annotate(**self.include)
         return query
 
     def extract_model_fields(self, model):
@@ -279,6 +283,11 @@ class BlitzCRUD(View):
                     elif isinstance(field, ManyToManyField):
                         many_to_many_fields.append(field.name)
 
+        if self.include != {}:
+            for annotation in self.include.keys():
+                if annotation not in self.exclude:
+                    id.append(annotation)
+                    headers.append(self.include_header.get(annotation,annotation.capitalize()))
         return id, headers, foreignkey_fields, many_to_many_fields
 
     def get_utility_form(self, real_model):

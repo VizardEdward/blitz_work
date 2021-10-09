@@ -181,6 +181,8 @@ class BlitzCRUD(View):
                 for field in self.__fields:
                     if(field not in self.__many_to_many_fields and field not in self.__foreignkey_fields):
                         search_query |= Q(**{field + "__icontains": search})
+                for lookup in self.get_fields_lookup(search):
+                    search_query |= lookup
                 query = query.filter(search_query)
 
             if table == self.__caption:
@@ -305,6 +307,9 @@ class BlitzCRUD(View):
                 return MAX_VALUE
         self.__fields=sorted(self.__fields, key = lambda value: get_priority(value))
         self.__header_field_map=sorted(self.__header_field_map, key = lambda value: get_priority(value))
+
+    def get_fields_lookup(self, value):
+        return []
 
     def get_utility_form(self, real_model):
         class UtilityForm(BlitzModelForm):

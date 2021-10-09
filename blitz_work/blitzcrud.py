@@ -40,6 +40,7 @@ class BlitzCRUD(View):
     exclude = ['id', ]
     include = {}
     include_header = {}
+    fields_priority = []
     dark_mode_switch_label = None
     crud_base_name = ""
     create_title = CREATE_TITLE[0]
@@ -84,6 +85,7 @@ class BlitzCRUD(View):
             self.formset = modelformset_factory(
                 self.__model, form=self.form, extra=0)
         self.__header_field_map = zip(self.__fields, self.__headers)
+        self.sort_fields()
         super().__init__(**kwargs)
 
     @staticmethod
@@ -289,6 +291,20 @@ class BlitzCRUD(View):
                     id.append(annotation)
                     headers.append(self.include_header.get(annotation,annotation.capitalize()))
         return id, headers, foreignkey_fields, many_to_many_fields
+
+    def sort_fields(self):
+        MAX_VALUE = len(self.fields_priority) + 1
+        def get_priority(value):
+            if type(value) == tuple:
+                key, _ = value
+            else:
+                key = value
+            try:
+                return self.fields_priority.index(key)
+            except ValueError:
+                return MAX_VALUE
+        self.__fields=sorted(self.__fields, key = lambda value: get_priority(value))
+        self.__header_field_map=sorted(self.__header_field_map, key = lambda value: get_priority(value))
 
     def get_utility_form(self, real_model):
         class UtilityForm(BlitzModelForm):

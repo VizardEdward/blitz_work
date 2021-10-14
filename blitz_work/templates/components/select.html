@@ -1,0 +1,13 @@
+<div class="form-row align-items-center">
+  <div class="col">
+    <select name="{{ widget.name }}"{% include "django/forms/widgets/attrs.html" %}>{% for group_name, group_choices, group_index in widget.optgroups %}{% if group_name %}
+    <optgroup label="{{ group_name }}">{% endif %}{% for option in group_choices %}
+    {% include option.template_name with widget=option %}{% endfor %}{% if group_name %}
+    </optgroup>{% endif %}{% endfor %}
+  </select>
+  
+  </div>
+  <div class="col-auto">
+    <a class="blitz-crud-related-model-add" title="{{model_name}}" href="{% if related_crud_url %}{% url related_crud_url %}?return={{redirect}}{% else %} # {% endif %}" role="button"><i class="fa fa-plus" aria-hidden="true"></i></a>
+  </div>
+</div>

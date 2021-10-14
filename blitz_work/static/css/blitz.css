@@ -1,3 +1,7 @@
 .blitzSelectionButtons{
     display: none;
 }
+a.blitz-crud-related-model-add i{
+    color: green !important;
+    margin: 5px;
+}

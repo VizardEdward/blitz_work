@@ -11,7 +11,7 @@
         </div>
         <div class="float-right" style="padding-bottom: 10px;">
             <button type="submit" class="btn btn-success"><i class="fas fa-plus"></i> {{crud_button.create}}</button>
-            <a role="button" href="{% url crud_url.view %}" type="button" class="btn btn-secondary"><i class="fas fa-times"></i> {{crud_button.cancel}}</a>
+            <a role="button" href="{% if return %}{% url return %}{% else %}{% url crud_url.view %}{% endif %}" type="button" class="btn btn-secondary"><i class="fas fa-times"></i> {{crud_button.cancel}}</a>
         </div>
     </form>
 </div>

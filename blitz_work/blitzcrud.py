@@ -43,6 +43,7 @@ class BlitzCRUD(View):
     fields_priority = []
     dark_mode_switch_label = None
     crud_base_name = ""
+    multiple_form = False
     create_title = CREATE_TITLE[0]
     delete_messages = DELETE_MESSAGES[0]
     delete_title = DELETE_TITLE[0]
@@ -62,14 +63,16 @@ class BlitzCRUD(View):
     __model = None
     __app_name = None
     __model_name = None
+    __multiple_forms = []
 
     def __init__(self, **kwargs):
-        if getattr(self,"data", None):
-            self.model = getattr(self,"data")
-            print("\033[93mPlease use model intead of data to specify the model. Blitz Work no longer support Queryset\033[0m")
+        if getattr(self, "data", None):
+            self.model = getattr(self, "data")
+            print(
+                "\033[93mPlease use model intead of data to specify the model. Blitz Work no longer support Queryset\033[0m")
         if issubclass(self.model, Model):
             self.__fields, self.__headers, self.__foreignkey_fields, self.__many_to_many_fields = self.extract_model_fields(
-                self.model._meta.get_fields())
+                self.model._meta.local_fields)
             self.__caption = self.model._meta.verbose_name_plural.capitalize()
             self.__app_name = self.model._meta.app_label
             self.__deletion_query = self.model.objects
@@ -86,6 +89,9 @@ class BlitzCRUD(View):
                 self.__model, form=self.form, extra=0)
         self.__header_field_map = zip(self.__fields, self.__headers)
         self.sort_fields()
+        if self.multiple_form:
+            self.__multiple_forms = {str(field.related_model): self.get_utility_form(
+                field.related_model) for field in self.model._meta.local_fields if field.related_model is not None}
         super().__init__(**kwargs)
 
     @staticmethod
@@ -122,10 +128,13 @@ class BlitzCRUD(View):
                 form = self.form(request.POST)
                 if form.is_valid():
                     form.save()
-                    return redirect(self.crud_base_name+"/view")
+                    return_url = request.GET.get("return", None)
+                    if return_url is None:
+                        return redirect(self.crud_base_name+"/view")
+                    return redirect(return_url)
                 else:
                     return render(request, self.create_template, context={
-                        "form": form, "crud_url": self.get_crud_url(), "crud_button": self.crud_buttons, "extend_template": self.extend_template, "dark_mode_switch_label":self.dark_mode_switch_label, "context": {"title": self.create_title}})
+                        "form": form, "crud_url": self.get_crud_url(), "crud_button": self.crud_buttons, "extend_template": self.extend_template, "dark_mode_switch_label": self.dark_mode_switch_label, "context": {"title": self.create_title}})
             else:
                 return HttpResponseNotAllowed(["POST"])
         else:
@@ -140,7 +149,7 @@ class BlitzCRUD(View):
                     formset.save()
                     return redirect(self.crud_base_name+"/view")
                 else:
-                    return render(request, self.update_template, context={"formset": formset, "crud_url": self.get_crud_url(), "crud_button": self.crud_buttons, "extend_template": self.extend_template, "dark_mode_switch_label":self.dark_mode_switch_label, "context": {"title": self.update_title}})
+                    return render(request, self.update_template, context={"formset": formset, "crud_url": self.get_crud_url(), "crud_button": self.crud_buttons, "extend_template": self.extend_template, "dark_mode_switch_label": self.dark_mode_switch_label, "context": {"title": self.update_title}})
             else:
                 return HttpResponseNotAllowed(["POST"])
         else:
@@ -161,8 +170,9 @@ class BlitzCRUD(View):
             return HttpResponseForbidden()
 
     def create_view(self, request, *args, **kwargs):
+        self.form.request = request
         if request.user.has_perm(f'{self.__app_name}.add_{self.__model_name}') or (settings.DEBUG and self.allow_anonimous_in_debug):
-            return render(request, self.create_template, context={"form": self.form(), "crud_url": self.get_crud_url(), "crud_button": self.crud_buttons, "extend_template": self.extend_template, "dark_mode_switch_label":self.dark_mode_switch_label, "context": {"title": self.create_title}})
+            return render(request, self.create_template, context={"form": self.form(), "return": request.GET.get("return", None), "crud_url": self.get_crud_url(), "crud_button": self.crud_buttons, "extend_template": self.extend_template, "dark_mode_switch_label": self.dark_mode_switch_label, "context": {"title": self.create_title}})
         else:
             return HttpResponseForbidden()
 
@@ -203,7 +213,7 @@ class BlitzCRUD(View):
                 [element.__str__() for element in getattr(value, key).all()]) for key in self.__fields], "pk":getattr(value, "pk")} for value in current_page.object_list]
             # print(self.data.query.annotations.keys())
 
-            return render(request, self.template_name, context={"crud_url": self.get_crud_url(), "crud_button": self.crud_buttons, "extend_template": self.extend_template, "table_template": self.table_template, "dark_mode_switch_label":self.dark_mode_switch_label, "context": {"search_text": search, "search": "" if search is None else "&search=" + search, "title_as_caption": self.caption_is_title, "show_caption": self.show_caption, "show_title": self.show_title, "title": self.title, "current_order": order, "caption": self.__caption, "headers": headers, "values": values, "page": current_page}})
+            return render(request, self.template_name, context={"crud_url": self.get_crud_url(), "crud_button": self.crud_buttons, "extend_template": self.extend_template, "table_template": self.table_template, "dark_mode_switch_label": self.dark_mode_switch_label, "context": {"search_text": search, "search": "" if search is None else "&search=" + search, "title_as_caption": self.caption_is_title, "show_caption": self.show_caption, "show_title": self.show_title, "title": self.title, "current_order": order, "caption": self.__caption, "headers": headers, "values": values, "page": current_page}})
         else:
             return HttpResponseForbidden()
 
@@ -211,7 +221,7 @@ class BlitzCRUD(View):
         if request.user.has_perm(f'{self.__app_name}.change_{self.__model_name}') or (settings.DEBUG and self.allow_anonimous_in_debug):
             items = request.GET.getlist("item")
             query = self.__optim_query
-            return render(request, self.update_template, context={"formset": self.formset(queryset=query.filter(pk__in=items)), "crud_url": self.get_crud_url(), "extend_template": self.extend_template, "crud_button": self.crud_buttons, "dark_mode_switch_label":self.dark_mode_switch_label, "context": {"title": self.update_title}})
+            return render(request, self.update_template, context={"formset": self.formset(queryset=query.filter(pk__in=items)), "crud_url": self.get_crud_url(), "extend_template": self.extend_template, "crud_button": self.crud_buttons, "dark_mode_switch_label": self.dark_mode_switch_label, "context": {"title": self.update_title}})
         else:
             return HttpResponseForbidden()
 
@@ -219,7 +229,7 @@ class BlitzCRUD(View):
         if request.user.has_perm(f'{self.__app_name}.view_{self.__model_name}') or (settings.DEBUG and self.allow_anonimous_in_debug):
             items = request.GET.getlist("item")
             query = self.__optim_query
-            return render(request, self.detail_template, context={"formset": self.formset(queryset=query.filter(pk__in=items)), "crud_url": self.get_crud_url(), "crud_button": self.crud_buttons, "extend_template": self.extend_template, "dark_mode_switch_label":self.dark_mode_switch_label, "context": {"title": self.detail_title}})
+            return render(request, self.detail_template, context={"formset": self.formset(queryset=query.filter(pk__in=items)), "crud_url": self.get_crud_url(), "crud_button": self.crud_buttons, "extend_template": self.extend_template, "dark_mode_switch_label": self.dark_mode_switch_label, "context": {"title": self.detail_title}})
         else:
             return HttpResponseForbidden()
 
@@ -227,7 +237,7 @@ class BlitzCRUD(View):
         if request.user.has_perm(f'{self.__app_name}.delete_{self.__model_name}') or (settings.DEBUG and self.allow_anonimous_in_debug):
             items = request.GET.getlist("item")
             query = self.__optim_query
-            return render(request, self.delete_template, context={"crud_url": self.get_crud_url(), "crud_button": self.crud_buttons, "extend_template": self.extend_template, "dark_mode_switch_label":self.dark_mode_switch_label, "context": {"title": self.delete_title, "message": self.delete_text, "pk": items, "items": query.filter(pk__in=items)}})
+            return render(request, self.delete_template, context={"crud_url": self.get_crud_url(), "crud_button": self.crud_buttons, "extend_template": self.extend_template, "dark_mode_switch_label": self.dark_mode_switch_label, "context": {"title": self.delete_title, "message": self.delete_text, "pk": items, "items": query.filter(pk__in=items)}})
         else:
             return HttpResponseForbidden()
 
@@ -259,8 +269,10 @@ class BlitzCRUD(View):
         """
         Return an optimal query
         """
-        query = self.model.objects.select_related(*foreignkey_fields) if len(foreignkey_fields) else self.model.objects
-        query = query.prefetch_related(*many_to_many_fields) if len(many_to_many_fields) else query
+        query = self.model.objects.select_related(
+            *foreignkey_fields) if len(foreignkey_fields) else self.model.objects
+        query = query.prefetch_related(
+            *many_to_many_fields) if len(many_to_many_fields) else query
         query = query.annotate(**self.include)
         return query
 
@@ -291,11 +303,13 @@ class BlitzCRUD(View):
             for annotation in self.include.keys():
                 if annotation not in self.exclude:
                     id.append(annotation)
-                    headers.append(self.include_header.get(annotation,annotation.capitalize()))
+                    headers.append(self.include_header.get(
+                        annotation, annotation.capitalize()))
         return id, headers, foreignkey_fields, many_to_many_fields
 
     def sort_fields(self):
         MAX_VALUE = len(self.fields_priority) + 1
+
         def get_priority(value):
             if type(value) == tuple:
                 key, _ = value
@@ -305,8 +319,10 @@ class BlitzCRUD(View):
                 return self.fields_priority.index(key)
             except ValueError:
                 return MAX_VALUE
-        self.__fields=sorted(self.__fields, key = lambda value: get_priority(value))
-        self.__header_field_map=sorted(self.__header_field_map, key = lambda value: get_priority(value))
+        self.__fields = sorted(
+            self.__fields, key=lambda value: get_priority(value))
+        self.__header_field_map = sorted(
+            self.__header_field_map, key=lambda value: get_priority(value))
 
     def get_fields_lookup(self, value):
         return []
@@ -328,7 +344,7 @@ class BlitzCRUD(View):
                 }
 
 
-def get_urls(crud_class: BlitzCRUD, crud_name=None, prefix:str=''):
+def get_urls(crud_class: BlitzCRUD, crud_name=None, prefix: str = ''):
     """
         Return a list of paths for the class
 
@@ -339,11 +355,12 @@ def get_urls(crud_class: BlitzCRUD, crud_name=None, prefix:str=''):
     Returns:
         list: list of paths for the CRUD
     """
-    
+
     if crud_class.model is None:
-        if getattr(crud_class,"data", None):
-            crud_name = getattr(crud_class,"data")._meta.verbose_name
-            print('\033[93mPlease use model intead of data to specify the model. Blitz Work no longer support Queryset\033[0m')
+        if getattr(crud_class, "data", None):
+            crud_name = getattr(crud_class, "data")._meta.verbose_name
+            print(
+                '\033[93mPlease use model intead of data to specify the model. Blitz Work no longer support Queryset\033[0m')
         else:
             raise Exception("No model provided")
     else:

@@ -1,7 +1,7 @@
 {% extends extend_template %}
 {% block content %}
 <div class="container">
-    {% if context.title %}<h1>{{context.title}}</h1>{% endif %}
+    {% if context.title %}<h1>{{context.title}}{% if context.crud_extra_title %} {{context.crud_extra_title}}{% endif %}</h1>{% endif %}
     <form method="POST">
         {% csrf_token %}
         <div class="card" style="margin-bottom: 7px;">
@@ -11,7 +11,7 @@
         </div>
         <div class="float-right" style="padding-bottom: 10px;">
             <button type="submit" class="btn btn-success"><i class="fas fa-plus"></i> {{crud_button.create}}</button>
-            <a role="button" href="{% if return %}{% url return %}{% else %}{% url crud_url.view %}{% endif %}" type="button" class="btn btn-secondary"><i class="fas fa-times"></i> {{crud_button.cancel}}</a>
+            <a role="button" href="{% if return %}{% url return %}{% if extra_return %}?return={{extra_return}}{% endif %}{% else %}{% url crud_url.view %}{% endif %}" type="button" class="btn btn-secondary"><i class="fas fa-times"></i> {{crud_button.cancel}}</a>
         </div>
     </form>
 </div>

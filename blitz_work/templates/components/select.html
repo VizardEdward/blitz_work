@@ -8,6 +8,6 @@
   
   </div>
   <div class="col-auto">
-    <a class="blitz-crud-related-model-add" title="{{model_name}}" href="{% if related_crud_url %}{% url related_crud_url %}?return={{redirect}}{% else %} # {% endif %}" role="button"><i class="fa fa-plus" aria-hidden="true"></i></a>
+    {% if related_crud_url %}<a class="blitz-crud-related-model-add" title="{{model_name}}" href="{% if related_crud_url %}{% url related_crud_url %}?return={{redirect}}{% if extra_url %}{% for return_url in extra_url %}&return={{return_url}}{% endfor %}{% endif %}{% else %} # {% endif %}" role="button"><i class="fa fa-plus" aria-hidden="true"></i></a>{% endif %}
   </div>
 </div>

@@ -1,6 +1,6 @@
 from django.forms import TextInput
 from django.forms.models import ModelChoiceField
-from django.forms.widgets import Select
+from django.forms.widgets import CheckboxInput, Select
 
 
 def custom_control(attrs):
@@ -15,6 +15,8 @@ class BText(TextInput):
     def __init__(self, attrs=None):
         super().__init__(custom_control(attrs))
 
+class BCheckRadioInput(CheckboxInput):
+    template_name = 'components/check_radio.html'
 
 class BModelChoice(Select):
     template_name = 'components/select.html'

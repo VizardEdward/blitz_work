@@ -8,7 +8,7 @@
             {% for form in formset %}
                 <div class="card" style="margin-bottom: 7px;">
                     <div class="card-body">
-                        {{form.as_p}}
+                        {% include multiform_template %}
                     </div>
                 </div>
             {% endfor %}

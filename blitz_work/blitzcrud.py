@@ -29,6 +29,8 @@ class BlitzCRUD(View):
     update_template = "blitz_crud_update.html"
     delete_template = "blitz_crud_delete.html"
     detail_template = "blitz_crud_detail.html"
+    form_template = "components/blitz_form.html"
+    multiform_template = "components/blitz_multiform.html"
     model = None
     paginate_by = 20
     title = None
@@ -157,7 +159,7 @@ class BlitzCRUD(View):
                     formset.save()
                     return redirect(self.crud_base_name+"/view")
                 else:
-                    return render(request, self.update_template, context={"formset": formset, "crud_url": self.get_crud_url(), "crud_button": self.crud_buttons, "extend_template": self.extend_template, "dark_mode_switch_label": self.dark_mode_switch_label, "context": {"title": self.update_title}})
+                    return render(request, self.update_template, context={"form_template": self.form_template, "formset": formset, "crud_url": self.get_crud_url(), "crud_button": self.crud_buttons, "extend_template": self.extend_template, "dark_mode_switch_label": self.dark_mode_switch_label, "context": {"title": self.update_title}})
             else:
                 return HttpResponseNotAllowed(["POST"])
         else:
@@ -184,13 +186,13 @@ class BlitzCRUD(View):
             if return_url is not None and len(return_url) > 1:
                 extra_return = "&return=".join(return_url[1:])
                 return_url = return_url[0]
-            elif return_url is not None and len(return_url)!=0:
+            elif return_url is not None and len(return_url) != 0:
                 return_url = return_url[0]
                 extra_return = ''
             else:
                 return_url = None
                 extra_return = None
-            return render(request, self.create_template, context={"form": self.form(), "return": return_url,"extra_return": extra_return, "crud_url": self.get_crud_url(), "crud_button": self.crud_buttons, "extend_template": self.extend_template, "dark_mode_switch_label": self.dark_mode_switch_label, "context": {"title": self.create_title, "crud_extra_title":self.crud_extra_title}})
+            return render(request, self.create_template, context={"form_template": self.form_template, "form": self.form(), "return": return_url, "extra_return": extra_return, "crud_url": self.get_crud_url(), "crud_button": self.crud_buttons, "extend_template": self.extend_template, "dark_mode_switch_label": self.dark_mode_switch_label, "context": {"title": self.create_title, "crud_extra_title": self.crud_extra_title}})
         else:
             return HttpResponseForbidden()
 
@@ -231,7 +233,7 @@ class BlitzCRUD(View):
                 [element.__str__() for element in getattr(value, key).all()]) for key in self.__fields], "pk":getattr(value, "pk")} for value in current_page.object_list]
             # print(self.data.query.annotations.keys())
 
-            return render(request, self.template_name, context={"crud_url": self.get_crud_url(), "crud_button": self.crud_buttons, "extend_template": self.extend_template, "table_template": self.table_template, "dark_mode_switch_label": self.dark_mode_switch_label, "context": {"search_text": search, "search": "" if search is None else "&search=" + search, "title_as_caption": self.caption_is_title, "show_caption": self.show_caption, "show_title": self.show_title, "title": self.title, "current_order": order, "caption": self.__caption, "headers": headers, "values": values, "page": current_page, "crud_extra_title":self.crud_extra_title}})
+            return render(request, self.template_name, context={"crud_url": self.get_crud_url(), "crud_button": self.crud_buttons, "extend_template": self.extend_template, "table_template": self.table_template, "dark_mode_switch_label": self.dark_mode_switch_label, "context": {"search_text": search, "search": "" if search is None else "&search=" + search, "title_as_caption": self.caption_is_title, "show_caption": self.show_caption, "show_title": self.show_title, "title": self.title, "current_order": order, "caption": self.__caption, "headers": headers, "values": values, "page": current_page, "crud_extra_title": self.crud_extra_title}})
         else:
             return HttpResponseForbidden()
 
@@ -240,7 +242,7 @@ class BlitzCRUD(View):
         if request.user.has_perm(f'{self.__app_name}.change_{self.__model_name}') or (settings.DEBUG and self.allow_anonimous_in_debug):
             items = request.GET.getlist("item")
             query = self.__optim_query
-            return render(request, self.update_template, context={"formset": self.formset(queryset=query.filter(pk__in=items)), "crud_url": self.get_crud_url(), "extend_template": self.extend_template, "crud_button": self.crud_buttons, "dark_mode_switch_label": self.dark_mode_switch_label, "context": {"title": self.update_title, "crud_extra_title":self.crud_extra_title}})
+            return render(request, self.update_template, context={"form_template": self.form_template, "formset": self.formset(queryset=query.filter(pk__in=items)), "crud_url": self.get_crud_url(), "extend_template": self.extend_template, "crud_button": self.crud_buttons, "dark_mode_switch_label": self.dark_mode_switch_label, "context": {"title": self.update_title, "crud_extra_title": self.crud_extra_title}})
         else:
             return HttpResponseForbidden()
 
@@ -248,7 +250,7 @@ class BlitzCRUD(View):
         if request.user.has_perm(f'{self.__app_name}.view_{self.__model_name}') or (settings.DEBUG and self.allow_anonimous_in_debug):
             items = request.GET.getlist("item")
             query = self.__optim_query
-            return render(request, self.detail_template, context={"formset": self.formset(queryset=query.filter(pk__in=items)), "crud_url": self.get_crud_url(), "crud_button": self.crud_buttons, "extend_template": self.extend_template, "dark_mode_switch_label": self.dark_mode_switch_label, "context": {"title": self.detail_title, "crud_extra_title":self.crud_extra_title}})
+            return render(request, self.detail_template, context={"multiform_template": self.multiform_template, "formset": self.formset(queryset=query.filter(pk__in=items)), "crud_url": self.get_crud_url(), "crud_button": self.crud_buttons, "extend_template": self.extend_template, "dark_mode_switch_label": self.dark_mode_switch_label, "context": {"title": self.detail_title, "crud_extra_title": self.crud_extra_title}})
         else:
             return HttpResponseForbidden()
 
@@ -256,7 +258,7 @@ class BlitzCRUD(View):
         if request.user.has_perm(f'{self.__app_name}.delete_{self.__model_name}') or (settings.DEBUG and self.allow_anonimous_in_debug):
             items = request.GET.getlist("item")
             query = self.__optim_query
-            return render(request, self.delete_template, context={"crud_url": self.get_crud_url(), "crud_button": self.crud_buttons, "extend_template": self.extend_template, "dark_mode_switch_label": self.dark_mode_switch_label, "context": {"title": self.delete_title, "crud_extra_title":self.crud_extra_title, "message": self.delete_text, "pk": items, "items": query.filter(pk__in=items)}})
+            return render(request, self.delete_template, context={"crud_url": self.get_crud_url(), "crud_button": self.crud_buttons, "extend_template": self.extend_template, "dark_mode_switch_label": self.dark_mode_switch_label, "context": {"title": self.delete_title, "crud_extra_title": self.crud_extra_title, "message": self.delete_text, "pk": items, "items": query.filter(pk__in=items)}})
         else:
             return HttpResponseForbidden()
 

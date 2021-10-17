@@ -1,0 +1,9 @@
+{% for field in form %}
+    <div>
+        {{ field.errors }}
+        {% if not field.is_hidden %}{{ field.label_tag }}{% endif %} {{ field }}
+        {% if field.help_text %}
+        <p class="help">{{ field.help_text|safe }}</p>
+        {% endif %}
+    </div>
+{% endfor %}
